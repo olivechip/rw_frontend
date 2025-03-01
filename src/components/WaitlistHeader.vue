@@ -1,24 +1,22 @@
 <template>
-  <div class="app">
-    <header class="header">
-      <div class="header-content">
-        <h1 class="logo">the soOP kitchen</h1>
-        <nav class="desktop-nav">
-          <a href="#menu" class="nav-link">Menu</a>
-          <a href="#reservations" class="nav-link">Reservations</a>
-          <a href="#about" class="nav-link">About</a>
-          <a href="#contact" class="nav-link">Contact</a>
-        </nav>
-      </div>
-      <!-- Mobile Navbar -->
-      <div v-if="isMenuOpen" class="mobile-menu">
-        <a href="#menu" class="mobile-nav-link">Menu</a>
-        <a href="#reservations" class="mobile-nav-link">Reservations</a>
-        <a href="#about" class="mobile-nav-link">About</a>
-        <a href="#contact" class="mobile-nav-link">Contact</a>
-      </div>
-    </header>
-  </div>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">the soOP kitchen</h1>
+      <nav class="desktop-nav">
+        <a href="#menu" class="nav-link">Menu</a>
+        <a href="#reservations" class="nav-link">Reservations</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+    </div>
+    <!-- Mobile Navbar -->
+    <div v-if="isMenuOpen" class="mobile-menu">
+      <a href="#menu" class="mobile-nav-link">Menu</a>
+      <a href="#reservations" class="mobile-nav-link">Reservations</a>
+      <a href="#about" class="mobile-nav-link">About</a>
+      <a href="#contact" class="mobile-nav-link">Contact</a>
+    </div>
+  </header>
 </template>
 
 <script>
@@ -27,17 +25,12 @@ export default {
   data() {
     return {
       isMenuOpen: false,
-    }
+    };
   },
-}
+};
 </script>
 
 <style>
-.app {
-  display: flex;
-  flex-direction: column;
-}
-
 .header {
   background: #121212;
   border-bottom: 1px solid #464646;
@@ -118,7 +111,7 @@ export default {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .hero-title {
+  .main-title {
     font-size: 3rem;
   }
 }

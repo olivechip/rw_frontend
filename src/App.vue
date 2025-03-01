@@ -1,13 +1,15 @@
 <template>
-  <WaitlistHeader />
-  <WaitlistMain />
-  <WaitlistFooter />
+  <div class="app">
+    <WaitlistHeader />
+    <WaitlistMain />
+    <WaitlistFooter />
+  </div>
 </template>
 
 <script>
-import WaitlistHeader from "./components/WaitlistHeader.vue"
-import WaitlistMain from "./components/WaitlistMain.vue"
-import WaitlistFooter from "./components/WaitlistFooter.vue"
+import WaitlistHeader from "./components/WaitlistHeader.vue";
+import WaitlistMain from "./components/WaitlistMain.vue";
+import WaitlistFooter from "./components/WaitlistFooter.vue";
 
 export default {
   name: "App",
@@ -15,8 +17,8 @@ export default {
     WaitlistHeader,
     WaitlistMain,
     WaitlistFooter,
-  }
-}
+  },
+};
 </script>
 
 <style>
@@ -32,5 +34,13 @@ body {
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   line-height: 1.5;
   color: #3e3e3e;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  color: #d7d7d7;
+  background: #121212;
+  min-height: 100vh;
 }
 </style>
