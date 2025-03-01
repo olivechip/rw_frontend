@@ -1,26 +1,36 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <WaitlistHeader />
+  <WaitlistMain />
+  <WaitlistFooter />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import WaitlistHeader from "./components/WaitlistHeader.vue"
+import WaitlistMain from "./components/WaitlistMain.vue"
+import WaitlistFooter from "./components/WaitlistFooter.vue"
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
+    WaitlistHeader,
+    WaitlistMain,
+    WaitlistFooter,
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  line-height: 1.5;
+  color: #3e3e3e;
 }
 </style>
