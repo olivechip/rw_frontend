@@ -4,7 +4,9 @@
       <div class="footer-grid">
         <div class="footer-section">
           <h3 class="footer-title">the soOp kitchen</h3>
-          <p>authentic OP type shi</p>
+          <ul class="footer-list">
+            <li>authentic OP type shi</li>
+          </ul>
         </div>
 
         <div class="footer-section">
@@ -18,8 +20,10 @@
 
         <div class="footer-section">
           <h3 class="footer-title">Contact</h3>
-          <p>phone: (000) 123-4567</p>
-          <p>address: 123 fake street, faketown, USA</p>
+          <ul class="footer-list">
+            <li>(000) 123-4567</li>
+            <li>123 fake street, faketown, USA</li>
+          </ul>
         </div>
       </div>
 
@@ -56,6 +60,7 @@ export default {
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
+  text-align: center;
 }
 
 .footer-grid {
@@ -80,6 +85,5 @@ export default {
   margin-top: 3rem;
   padding-top: 2rem;
   border-top: 1px solid #464646;
-  text-align: center;
 }
 </style>

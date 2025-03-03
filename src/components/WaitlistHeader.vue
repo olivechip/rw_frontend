@@ -3,8 +3,8 @@
     <div class="header-content">
       <h1 class="logo">the soOP kitchen</h1>
       <nav class="desktop-nav">
+        <router-link to="/" class="nav-link">Waitlist</router-link>
         <a href="#menu" class="nav-link">Menu</a>
-        <a href="#reservations" class="nav-link">Reservations</a>
         <a href="#about" class="nav-link">About</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>

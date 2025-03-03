@@ -1,23 +1,13 @@
 <template>
   <div class="app">
-    <WaitlistHeader />
-    <WaitlistMain />
-    <WaitlistFooter />
+    <router-view />
   </div>
 </template>
 
 <script>
-import WaitlistHeader from "./components/WaitlistHeader.vue";
-import WaitlistMain from "./components/WaitlistMain.vue";
-import WaitlistFooter from "./components/WaitlistFooter.vue";
 
 export default {
-  name: "App",
-  components: {
-    WaitlistHeader,
-    WaitlistMain,
-    WaitlistFooter,
-  },
+  
 };
 </script>
 
