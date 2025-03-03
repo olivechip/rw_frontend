@@ -3,7 +3,7 @@
     <div class="footer-content">
       <div class="footer-grid">
         <div class="footer-section">
-          <h3 class="footer-title">the soOp kitchen</h3>
+          <h3 class="footer-title">the soOP kitchen</h3>
           <ul class="footer-list">
             <li>authentic OP type shi</li>
           </ul>

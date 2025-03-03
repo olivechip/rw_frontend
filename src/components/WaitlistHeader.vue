@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header-content">
-      <h1 class="logo"></h1>
+      <h1 class="logo">the soOP kitchen</h1>
       <nav class="desktop-nav">
         <router-link to="/" class="nav-link">Waitlist</router-link>
         <router-link to="#menu" class="nav-link">Menu</router-link>
