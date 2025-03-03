@@ -17,6 +17,17 @@
       </div>
     </section>
 
+    <section class="steps">
+      <h3 class="steps-title">How It Works</h3>
+      <div class="steps-grid">
+        <div v-for="(step, index) in steps" :key="index" class="step-card">
+          <div class="step-number">{{ index + 1 }}</div>
+          <h4 class="step-title">{{ step.title }}</h4>
+          <p class="step-description">{{ step.description }}</p>
+        </div>
+      </div>
+    </section>
+
     <section class="current-parties">
       <div class="container">
         <h3 class="parties-title">Current Parties ({{ waitlist.length }})</h3>
@@ -52,21 +63,11 @@
         </div>
       </div>
     </section>
-
-    <section class="steps">
-      <h3 class="steps-title">How It Works</h3>
-      <div class="steps-grid">
-        <div v-for="(step, index) in steps" :key="index" class="step-card">
-          <div class="step-number">{{ index + 1 }}</div>
-          <h4 class="step-title">{{ step.title }}</h4>
-          <p class="step-description">{{ step.description }}</p>
-        </div>
-      </div>
-    </section>
   </main>
 </template>
 
 <script>
+
 export default {
   name: "WaitlistMain",
   data() {
@@ -114,9 +115,7 @@ export default {
   },
   methods: {
     handleJoinWaitlist() {
-      alert(
-        "Joining waitlist... This would open a form in a real application."
-      );
+      this.$router.push("/join");
     },
     currentYear() {
       return new Date().getFullYear();
@@ -166,6 +165,50 @@ export default {
 
 .wait-info {
   margin-top: 2rem;
+}
+
+/* Steps section */
+.steps {
+  background-color: #242424;
+  padding: 4rem 1rem;
+}
+
+.steps-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+}
+
+.steps-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.step-card {
+  background: #121212;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #dc2626;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.step-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Current Parties section */
@@ -237,49 +280,5 @@ export default {
 .status-badge.notified {
   background-color: #064e3b;
   color: #10b981;
-}
-
-/* Steps section */
-.steps {
-  background-color: #242424;
-  padding: 4rem 1rem;
-}
-
-.steps-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 3rem;
-}
-
-.steps-grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  gap: 2rem;
-  padding: 0 1rem;
-}
-
-.step-card {
-  background: #121212;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.step-number {
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: #dc2626;
-  border-radius: 9999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.step-title {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
 }
 </style>

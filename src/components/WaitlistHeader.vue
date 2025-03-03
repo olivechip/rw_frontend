@@ -1,12 +1,12 @@
 <template>
   <header class="header">
     <div class="header-content">
-      <h1 class="logo">the soOP kitchen</h1>
+      <h1 class="logo"></h1>
       <nav class="desktop-nav">
         <router-link to="/" class="nav-link">Waitlist</router-link>
-        <a href="#menu" class="nav-link">Menu</a>
-        <a href="#about" class="nav-link">About</a>
-        <a href="#contact" class="nav-link">Contact</a>
+        <router-link to="#menu" class="nav-link">Menu</router-link>
+        <router-link to="#about" class="nav-link">About</router-link>
+        <router-link to="#contact" class="nav-link">Contact</router-link>
       </nav>
     </div>
     <!-- Mobile Navbar -->
