@@ -12,7 +12,7 @@
         </button>
         <div class="wait-info">
           <p>Current estimated wait time: {{ totalWaitTime }} minutes</p>
-          <p>We'll send you a text message when your table is ready.</p>
+          <p>We'll send you a text message when your table is almost ready.</p>
         </div>
       </div>
     </section>
@@ -28,7 +28,7 @@
       </div>
     </section>
 
-    <CurrentParties />
+    <CurrentParties view="guests"/>
   </main>
 </template>
 

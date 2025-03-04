@@ -9,7 +9,7 @@
               <th>Position</th>
               <th>Name</th>
               <th>Party Size</th>
-              <th>Phone Number</th>
+              <th v-if="view == 'staff'">Phone Number</th>
               <th>Time Joined</th>
               <th>Status</th>
             </tr>
@@ -23,7 +23,7 @@
               <td>{{ index + 1 }}</td>
               <td>{{ party.name }}</td>
               <td>{{ party.partySize }}</td>
-              <td>{{ party.phoneNumber }}</td>
+              <td v-if="view == 'staff'">{{ party.phoneNumber }}</td>
               <td>
                 {{ convertToLocalTime(party.waitlistEntry.joinTime) }}
               </td>
@@ -47,6 +47,12 @@ import axios from "axios";
 
 export default {
   name: "CurrentParties",
+  props: {
+    view: {
+      type: String,
+      default: "guests",
+    },
+  },
   data() {
     return {
       waitlist: [],

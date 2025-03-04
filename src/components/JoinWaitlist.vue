@@ -37,7 +37,8 @@
                 type="tel"
                 id="phoneNumber"
                 v-model="phoneNumber"
-                maxlength="20"
+                minlength="10"
+                maxlength="10"
                 @input="validatePhoneNumber"
                 required
               />
@@ -89,8 +90,8 @@ export default {
       const input = event.target;
       const value = input.value;
 
-      if (!/^\d+$/.test(value)) {
-        input.setCustomValidity("Phone number must contain only numbers.");
+      if (!/^\d+$/.test(value) || value.length !== 10) {
+        input.setCustomValidity("Please enter a valid 10-digit phone number.");
       } else {
         input.setCustomValidity("");
       }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <WaitlistHeader />
-    <CurrentParties />
+    <CurrentParties view="staff"/>
     <WaitlistFooter />
   </div>
 </template>
