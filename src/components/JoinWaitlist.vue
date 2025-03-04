@@ -4,15 +4,15 @@
     <form @submit.prevent="handleSubmit">
       <div class="form-group">
         <label for="name">Name:</label>
-        <input type="text" id="name" v-model="name" required/>
+        <input type="text" id="name" v-model="name" required />
       </div>
       <div class="form-group">
         <label for="partySize">Party Size:</label>
-        <input type="number" id="partySize" v-model="partySize" required/>
+        <input type="number" id="partySize" v-model="partySize" required />
       </div>
       <div class="form-group">
         <label for="phoneNumber">Phone Number:</label>
-        <input type="tel" id="phoneNumber" v-model="phoneNumber" required/>
+        <input type="tel" id="phoneNumber" v-model="phoneNumber" required />
       </div>
       <button type="submit">Join Waitlist</button>
     </form>
