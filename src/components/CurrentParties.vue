@@ -1,7 +1,10 @@
 <template>
   <section class="current-parties">
     <div class="container">
-      <h3 class="parties-title">Current Parties ({{ waitlist.length }})</h3>
+      <h3 class="parties-title" v-if="view === 'staff'">
+        Total Parties ({{ filteredWaitlist.length }})
+      </h3>
+      <h3 class="parties-title" v-else>Current Waitlist</h3>
       <div class="parties-table-container">
         <table class="parties-table">
           <thead>
@@ -12,11 +15,12 @@
               <th v-if="view == 'staff'">Phone Number</th>
               <th>Time Joined</th>
               <th>Status</th>
+              <th v-if="view === 'staff'">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              v-for="(party, index) in waitlist"
+              v-for="(party, index) in filteredWaitlist"
               :key="index"
               :class="{ highlighted: party.name === 'You' }"
             >
@@ -24,15 +28,24 @@
               <td>{{ party.name }}</td>
               <td>{{ party.partySize }}</td>
               <td v-if="view == 'staff'">{{ party.phoneNumber }}</td>
-              <td>
-                {{ convertToLocalTime(party.waitlistEntry.joinTime) }}
-              </td>
+              <td>{{ convertToLocalTime(party.waitlistEntry.joinTime) }}</td>
               <td>
                 <span
                   :class="`status-badge ${party.waitlistEntry.status.toLowerCase()}`"
                 >
                   {{ party.waitlistEntry.status }}
                 </span>
+              </td>
+              <td v-if="view === 'staff'">
+                <template
+                  v-if="
+                    party.waitlistEntry.status === 'WAITING' ||
+                    party.waitlistEntry.status === 'NOTIFIED'
+                  "
+                >
+                  <button @click="nextStatus(party)">Next</button>
+                  <button @click="cancelEntry(party)">Cancel</button>
+                </template>
               </td>
             </tr>
           </tbody>
@@ -58,14 +71,22 @@ export default {
       waitlist: [],
     };
   },
-  computed: {},
+  computed: {
+    filteredWaitlist() {
+      return this.waitlist.filter((party) => {
+        const status = party.waitlistEntry.status.toLowerCase();
+        return (
+          this.view === "staff" || status === "waiting" || status === "notified"
+        );
+      });
+    },
+  },
   methods: {
     async getGuests() {
       try {
         const res = await axios.get(
           `${process.env.VUE_APP_API_URL}/api/guests`
         );
-        console.log(res.data);
         this.waitlist = res.data;
       } catch (error) {
         console.error(error);
@@ -77,6 +98,37 @@ export default {
         " " +
         new Date(utcTime + "Z").toLocaleTimeString()
       );
+    },
+    async nextStatus(party) {
+      const currentStatus = party.waitlistEntry.status;
+      const nextStatus = {
+        WAITING: "NOTIFIED",
+        NOTIFIED: "COMPLETED",
+      };
+      try {
+        await axios.put(
+          `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/${nextStatus[currentStatus]}`
+        );
+        party.waitlistEntry.status = nextStatus[currentStatus];
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async cancelEntry(party) {
+      if (
+        confirm(
+          `Are you sure you want to mark ${party.name}'s status as CANCELED?`
+        )
+      ) {
+        try {
+          await axios.put(
+            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/CANCELED`
+          );
+          party.waitlistEntry.status = "CANCELED";
+        } catch (error) {
+          console.error(error);
+        }
+      }
     },
   },
   mounted() {
@@ -147,12 +199,20 @@ export default {
 }
 
 .status-badge.waiting {
-  background-color: #58580e;
-  color: #f1f50b;
+  background-color: #a11c1c;
 }
 
 .status-badge.notified {
-  background-color: #064e3b;
-  color: #10b981;
+  background-color: #157026;
+}
+
+.status-badge.completed {
+  background-color: #01517c;
+  color: #d3d4ff;
+}
+
+.status-badge.canceled {
+  background-color: #525252;
+  color: #dfdfdf;
 }
 </style>
