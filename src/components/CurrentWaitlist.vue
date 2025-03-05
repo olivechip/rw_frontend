@@ -17,11 +17,22 @@
         <table class="parties-table">
           <thead>
             <tr>
-              <th>Position</th>
+              <th>
+                Position<button class="sort-button" @click="sortByPosition">
+                  Sort
+                </button>
+              </th>
               <th>Name</th>
               <th>Party Size</th>
               <th v-if="view == 'staff'">Phone Number</th>
-              <th>Time Joined</th>
+              <th>
+                Time Joined<button
+                  class="sort-button"
+                  @click="sortByTimeJoined"
+                >
+                  Sort
+                </button>
+              </th>
               <th>Status</th>
               <th v-if="view === 'staff'">Actions</th>
             </tr>
@@ -30,7 +41,7 @@
             <tr v-for="(party, index) in filteredWaitlist" :key="index">
               <td>
                 {{
-                  ["CANCELED", "COMPLETED"].includes(party.waitlistEntry.status)
+                  ["COMPLETED", "CANCELED"].includes(party.waitlistEntry.status)
                     ? "-"
                     : getVisiblePosition(index)
                 }}
@@ -75,15 +86,44 @@ export default {
     view: { type: String, default: "guests" },
   },
   data() {
-    return { waitlist: [], lastUpdated: new Date().toLocaleTimeString() };
+    return {
+      waitlist: [],
+      lastUpdated: new Date().toLocaleTimeString(),
+      sortAscending: true,
+      sortBy: null,
+    };
   },
   computed: {
     filteredWaitlist() {
-      return this.waitlist.filter(({ waitlistEntry }) =>
+      const filtered = this.waitlist.filter(({ waitlistEntry }) =>
         this.view === "staff"
           ? true
           : ["waiting", "notified"].includes(waitlistEntry.status.toLowerCase())
       );
+
+      return [...filtered].sort((a, b) => {
+        if (this.sortBy === "position") {
+          const positionA = ["CANCELED", "COMPLETED"].includes(
+            a.waitlistEntry.status
+          )
+            ? Infinity
+            : this.getVisiblePosition(filtered.indexOf(a));
+          const positionB = ["CANCELED", "COMPLETED"].includes(
+            b.waitlistEntry.status
+          )
+            ? Infinity
+            : this.getVisiblePosition(filtered.indexOf(b));
+          return this.sortAscending
+            ? positionA - positionB
+            : positionB - positionA;
+        } else if (this.sortBy === "timeJoined") {
+          const timeA = new Date(a.waitlistEntry.joinTime);
+          const timeB = new Date(b.waitlistEntry.joinTime);
+          return this.sortAscending ? timeA - timeB : timeB - timeA;
+        } else {
+          return 0;
+        }
+      });
     },
   },
   methods: {
@@ -97,6 +137,27 @@ export default {
       } catch (error) {
         console.error("Error fetching guests:", error);
       }
+    },
+    sortByPosition() {
+      this.sortBy = "position";
+      this.sortAscending = true;
+    },
+    sortByTimeJoined() {
+      this.sortBy = "timeJoined";
+      this.sortAscending = true;
+    },
+    getVisiblePosition(index) {
+      let position = 1;
+      for (let i = 0; i < index; i++) {
+        if (
+          !["COMPLETED", "CANCELED"].includes(
+            this.filteredWaitlist[i].waitlistEntry.status
+          )
+        ) {
+          position++;
+        }
+      }
+      return position;
     },
     formatDateTime(utcTime) {
       const date = new Date(`${utcTime}Z`);
@@ -132,19 +193,6 @@ export default {
           console.error("Error canceling entry:", error);
         }
       }
-    },
-    getVisiblePosition(index) {
-      let position = 1;
-      for (let i = 0; i < index; i++) {
-        if (
-          !["COMPLETED", "CANCELED"].includes(
-            this.filteredWaitlist[i].waitlistEntry.status
-          )
-        ) {
-          position++;
-        }
-      }
-      return position;
     },
   },
   mounted() {
@@ -184,6 +232,16 @@ export default {
   width: 100%;
   border-collapse: collapse;
   background-color: #121212;
+}
+
+.sort-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
 }
 
 .parties-table th,
