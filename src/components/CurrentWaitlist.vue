@@ -28,7 +28,7 @@
               </th>
               <th>Name</th>
               <th>Party Size</th>
-              <th v-if="view == 'staff'">Phone Number</th>
+              <!-- <th v-if="view == 'staff'">Phone Number</th> -->
               <th>
                 Time Joined<button
                   v-if="view === 'staff'"
@@ -39,7 +39,6 @@
                 </button>
               </th>
               <th>Status</th>
-              <th v-if="view === 'staff'">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -53,24 +52,36 @@
               </td>
               <td>{{ party.name }}</td>
               <td>{{ party.partySize }}</td>
-              <td v-if="view === 'staff'">{{ party.phoneNumber }}</td>
+              <!-- <td v-if="view === 'staff'">{{ party.phoneNumber }}</td> -->
               <td>{{ formatDateTime(party.waitlistEntry.joinTime) }}</td>
               <td>
                 <span
-                  :class="`status-badge ${party.waitlistEntry.status.toLowerCase()}`"
-                >
-                  {{ party.waitlistEntry.status }}
-                </span>
-              </td>
-              <td v-if="view === 'staff'">
-                <template
                   v-if="
                     ['WAITING', 'NOTIFIED'].includes(party.waitlistEntry.status)
                   "
+                  :class="`status-badge ${party.waitlistEntry.status.toLowerCase()} ${
+                    view === 'staff' ? 'clickable' : null
+                  }`"
+                  @click="view === 'staff' ? updateStatus(party) : null"
                 >
-                  <button @click="updateStatus(party)">Next</button>
-                  <button @click="cancelEntry(party)">Cancel</button>
-                </template>
+                  {{ party.waitlistEntry.status }}
+                </span>
+                <span
+                  v-else
+                  :class="`status-badge ${party.waitlistEntry.status.toLowerCase()} unclickable`"
+                >
+                  {{ party.waitlistEntry.status }}
+                </span>
+                <button
+                  v-if="
+                    view === 'staff' &&
+                    party.waitlistEntry.status !== 'COMPLETED' &&
+                    party.waitlistEntry.status !== 'CANCELED'
+                  "
+                  @click="cancelEntry(party)"
+                  aria-label="Cancel"
+                  class="cancel-button"
+                ></button>
               </td>
             </tr>
           </tbody>
@@ -166,7 +177,7 @@ export default {
     },
     formatDateTime(utcTime) {
       const date = new Date(`${utcTime}Z`);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      return `${date.toLocaleTimeString()}`;
     },
     async updateStatus(party) {
       const nextStatusMap = { WAITING: "NOTIFIED", NOTIFIED: "COMPLETED" };
@@ -176,9 +187,10 @@ export default {
 
       try {
         await axios.put(
-          `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/${nextStatus}`
+          `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/${nextStatus}`
         );
         party.waitlistEntry.status = nextStatus;
+        this.getGuests();
       } catch (error) {
         console.error("Error updating status:", error);
       }
@@ -191,9 +203,10 @@ export default {
       ) {
         try {
           await axios.put(
-            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/CANCELED`
+            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/CANCELED`
           );
           party.waitlistEntry.status = "CANCELED";
+          this.getGuests();
         } catch (error) {
           console.error("Error canceling entry:", error);
         }
@@ -268,11 +281,6 @@ export default {
   border-bottom: none;
 }
 
-/* if highlight for current viewer is needed
-.parties-table tr.highlighted {
-  background-color: rgba(220, 38, 38, 0.1);
-} */
-
 .status-badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
@@ -297,5 +305,18 @@ export default {
 .status-badge.canceled {
   background-color: #525252;
   color: #dfdfdf;
+}
+
+.status-badge.clickable {
+  cursor: pointer;
+}
+
+.status-badge.unclickable {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.status-badge.clickable:hover {
+  opacity: 0.8;
 }
 </style>
