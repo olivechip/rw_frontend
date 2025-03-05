@@ -18,7 +18,11 @@
           <thead>
             <tr>
               <th>
-                Position<button class="sort-button" @click="sortByPosition">
+                Position<button
+                  v-if="view === 'staff'"
+                  class="sort-button"
+                  @click="sortByPosition"
+                >
                   Sort
                 </button>
               </th>
@@ -27,6 +31,7 @@
               <th v-if="view == 'staff'">Phone Number</th>
               <th>
                 Time Joined<button
+                  v-if="view === 'staff'"
                   class="sort-button"
                   @click="sortByTimeJoined"
                 >
