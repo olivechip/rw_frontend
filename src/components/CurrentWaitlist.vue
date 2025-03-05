@@ -10,9 +10,7 @@
           }}
         </span>
         <RefreshButton @refresh="getGuests" />
-        <p style="font-size: 12px; font-weight: 600">
-          last updated: {{ lastUpdated }}
-        </p>
+        <p class="tiny-text">last updated: {{ lastUpdated }}</p>
       </h3>
 
       <div class="parties-table-container">
@@ -30,7 +28,13 @@
           </thead>
           <tbody>
             <tr v-for="(party, index) in filteredWaitlist" :key="index">
-              <td>{{ index + 1 }}</td>
+              <td>
+                {{
+                  ["CANCELED", "COMPLETED"].includes(party.waitlistEntry.status)
+                    ? "-"
+                    : getVisiblePosition(index)
+                }}
+              </td>
               <td>{{ party.name }}</td>
               <td>{{ party.partySize }}</td>
               <td v-if="view === 'staff'">{{ party.phoneNumber }}</td>
@@ -129,6 +133,19 @@ export default {
         }
       }
     },
+    getVisiblePosition(index) {
+      let position = 1;
+      for (let i = 0; i < index; i++) {
+        if (
+          !["COMPLETED", "CANCELED"].includes(
+            this.filteredWaitlist[i].waitlistEntry.status
+          )
+        ) {
+          position++;
+        }
+      }
+      return position;
+    },
   },
   mounted() {
     this.getGuests();
@@ -153,6 +170,10 @@ export default {
   margin-bottom: 2rem;
 }
 
+.tiny-text {
+  font-size: 12px;
+  font-weight: 600;
+}
 .parties-table-container {
   overflow-x: auto;
   border-radius: 0.5rem;
