@@ -1,7 +1,6 @@
 <template>
   <main class="main">
-
-    <CurrentWaitlist view="guests" /> <!-- could move this -->
+    <CurrentWaitlist view="guests" @waitlist-updated="updateWaitlist" />
 
     <section class="main">
       <div class="main-content">
@@ -30,13 +29,10 @@
         </div>
       </div>
     </section>
-
-    
   </main>
 </template>
 
 <script>
-import axios from "axios";
 import CurrentWaitlist from "./CurrentWaitlist.vue";
 
 export default {
@@ -77,21 +73,11 @@ export default {
     handleJoinWaitlist() {
       this.$router.push("/join-waitlist");
     },
-    async getGuests() {
-      try {
-        const res = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/guests`
-        );
-        console.log(res.data);
-        this.waitlist = res.data;
-      } catch (error) {
-        console.error(error);
-      }
+    updateWaitlist(waitlist) {
+      this.waitlist = waitlist;
     },
   },
-  mounted() {
-    this.getGuests();
-  },
+  mounted() {},
 };
 </script>
 
