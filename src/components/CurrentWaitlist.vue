@@ -18,25 +18,33 @@
           <thead>
             <tr>
               <th>
-                Position<button
+                Position
+                <span
                   v-if="view === 'staff'"
-                  class="sort-button"
+                  class="sort-icon"
                   @click="sortByPosition"
-                >
-                  Sort
-                </button>
+                  >▼
+                </span>
               </th>
-              <th>Name</th>
+              <th>
+                Name
+                <span
+                  v-if="view === 'staff'"
+                  class="sort-icon"
+                  @click="sortByName"
+                  >▼
+                </span>
+              </th>
               <th>Party Size</th>
               <!-- <th v-if="view == 'staff'">Phone Number</th> -->
               <th>
-                Time Joined<button
+                Time Joined
+                <span
                   v-if="view === 'staff'"
-                  class="sort-button"
-                  @click="sortByTimeJoined"
-                >
-                  Sort
-                </button>
+                  class="sort-icon"
+                  @click="sortByPosition"
+                  >▼
+                </span>
               </th>
               <th>Status</th>
             </tr>
@@ -132,12 +140,20 @@ export default {
           return this.sortAscending
             ? positionA - positionB
             : positionB - positionA;
-        } else if (this.sortBy === "timeJoined") {
-          const timeA = new Date(a.waitlistEntry.joinTime);
-          const timeB = new Date(b.waitlistEntry.joinTime);
-          return this.sortAscending ? timeA - timeB : timeB - timeA;
-        } else {
-          return 0;
+        } else if (this.sortBy === "name") {
+          const nameA = a.name.toLowerCase();
+          const nameB = b.name.toLowerCase();
+          if (nameA < nameB) {
+            return this.sortAscending ? -1 : 1;
+          } else if (nameA > nameB) {
+            return this.sortAscending ? 1 : -1;
+          } else if (this.sortBy === "timeJoined") {
+            const timeA = new Date(a.waitlistEntry.joinTime);
+            const timeB = new Date(b.waitlistEntry.joinTime);
+            return this.sortAscending ? timeA - timeB : timeB - timeA;
+          } else {
+            return 0;
+          }
         }
       });
     },
@@ -156,6 +172,10 @@ export default {
     },
     sortByPosition() {
       this.sortBy = "position";
+      this.sortAscending = true;
+    },
+    sortByName() {
+      this.sortBy = "name";
       this.sortAscending = true;
     },
     sortByTimeJoined() {
@@ -185,14 +205,20 @@ export default {
 
       if (!nextStatus) return;
 
-      try {
-        await axios.put(
-          `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/${nextStatus}`
-        );
-        party.waitlistEntry.status = nextStatus;
-        this.getGuests();
-      } catch (error) {
-        console.error("Error updating status:", error);
+      if (
+        confirm(
+          `Are you sure you want to mark ${party.name}'s status as ${nextStatus}?`
+        )
+      ) {
+        try {
+          await axios.put(
+            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/${nextStatus}`
+          );
+          party.waitlistEntry.status = nextStatus;
+          this.getGuests();
+        } catch (error) {
+          console.error("Error updating status:", error);
+        }
       }
     },
     async cancelEntry(party) {
@@ -252,14 +278,10 @@ export default {
   background-color: #121212;
 }
 
-.sort-button {
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  background-color: #333;
-  color: white;
-  border: none;
+.sort-icon {
+  font-size: 0.8em;
+  margin-left: 0.25rem;
   cursor: pointer;
-  border-radius: 9999px;
 }
 
 .parties-table th,
