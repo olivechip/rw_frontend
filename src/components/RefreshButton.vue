@@ -1,5 +1,5 @@
 <template>
-  <button type="button" class="button" @click="refresh">
+  <button type="button" class="refresh-button" @click="refresh">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"
@@ -42,7 +42,7 @@ export default {
 </script>
 
 <style>
-.button {
+.refresh-button {
   color: white;
   background-color: #1a1a1a;
   font-weight: 500;
@@ -55,13 +55,14 @@ export default {
   display: inline-flex;
   align-items: center;
   border: none;
+  margin-left: 0.5rem; /* remove if text needs to be centered */
 }
 
-.button:hover {
+.refresh-button:hover {
   background-color: #242424;
 }
 
-.button svg {
+.refresh-button svg {
   display: inline;
   width: 1.3rem;
   height: 1.3rem;

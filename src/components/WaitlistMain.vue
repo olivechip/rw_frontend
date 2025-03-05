@@ -1,5 +1,8 @@
 <template>
   <main class="main">
+
+    <CurrentWaitlist view="guests" /> <!-- could move this -->
+
     <section class="main">
       <div class="main-content">
         <h2 class="main-title">Join Our Waitlist</h2>
@@ -28,18 +31,18 @@
       </div>
     </section>
 
-    <CurrentParties view="guests" />
+    
   </main>
 </template>
 
 <script>
 import axios from "axios";
-import CurrentParties from "./CurrentParties.vue";
+import CurrentWaitlist from "./CurrentWaitlist.vue";
 
 export default {
   name: "WaitlistMain",
   components: {
-    CurrentParties,
+    CurrentWaitlist,
   },
   data() {
     return {

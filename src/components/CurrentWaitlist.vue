@@ -10,6 +10,9 @@
           }}
         </span>
         <RefreshButton @refresh="getGuests" />
+        <p style="font-size: 12px; font-weight: 600">
+          last updated: {{ lastUpdated }}
+        </p>
       </h3>
 
       <div class="parties-table-container">
@@ -62,13 +65,13 @@ import axios from "axios";
 import RefreshButton from "./RefreshButton.vue";
 
 export default {
-  name: "CurrentParties",
+  name: "CurrentWaitlist",
   components: { RefreshButton },
   props: {
     view: { type: String, default: "guests" },
   },
   data() {
-    return { waitlist: [] };
+    return { waitlist: [], lastUpdated: new Date().toLocaleTimeString() };
   },
   computed: {
     filteredWaitlist() {
@@ -86,6 +89,7 @@ export default {
           `${process.env.VUE_APP_API_URL}/api/guests`
         );
         this.waitlist = data;
+        this.lastUpdated = new Date().toLocaleTimeString();
       } catch (error) {
         console.error("Error fetching guests:", error);
       }
