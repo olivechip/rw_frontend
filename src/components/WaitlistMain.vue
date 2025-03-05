@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import CurrentParties from "./CurrentParties.vue";
 import axios from "axios";
+import CurrentParties from "./CurrentParties.vue";
 
 export default {
   name: "WaitlistMain",

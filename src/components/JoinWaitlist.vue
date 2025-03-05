@@ -58,9 +58,10 @@
 </template>
 
 <script>
+import axios from "axios";
+import { eventBus } from "../event-bus.js";
 import WaitlistHeader from "./WaitlistHeader.vue";
 import WaitlistFooter from "./WaitlistFooter.vue";
-import axios from "axios";
 
 export default {
   name: "JoinWaitlist",
@@ -115,7 +116,7 @@ export default {
         // });
 
         alert("You have been added to the waitlist!");
-
+        eventBus.emit("waitlist-updated");
         this.$router.push("/");
       } catch (error) {
         alert("Error joining waitlist. Please try again later.");

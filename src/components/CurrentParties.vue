@@ -57,6 +57,7 @@
 
 <script>
 import axios from "axios";
+import { eventBus } from "../event-bus.js";
 
 export default {
   name: "CurrentParties",
@@ -105,11 +106,15 @@ export default {
         WAITING: "NOTIFIED",
         NOTIFIED: "COMPLETED",
       };
+
       try {
         await axios.put(
           `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/${nextStatus[currentStatus]}`
         );
+
         party.waitlistEntry.status = nextStatus[currentStatus];
+
+        eventBus.emit("waitlist-updated");
       } catch (error) {
         console.error(error);
       }
@@ -125,6 +130,7 @@ export default {
             `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/CANCELED`
           );
           party.waitlistEntry.status = "CANCELED";
+          eventBus.emit("waitlist-updated");
         } catch (error) {
           console.error(error);
         }
@@ -133,6 +139,13 @@ export default {
   },
   mounted() {
     this.getGuests();
+
+    eventBus.on("waitlist-updated", () => {
+      this.getGuests();
+    });
+  },
+  beforeUnmount() {
+    eventBus.off("waitlist-updated");
   },
 };
 </script>
