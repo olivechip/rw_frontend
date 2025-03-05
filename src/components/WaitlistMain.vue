@@ -73,8 +73,8 @@ export default {
     handleJoinWaitlist() {
       this.$router.push("/join-waitlist");
     },
-    updateWaitlist(waitlist) {
-      this.waitlist = waitlist;
+    updateWaitlist(newWaitlist) {
+      this.waitlist = newWaitlist;
     },
   },
   mounted() {},

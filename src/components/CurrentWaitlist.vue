@@ -137,20 +137,18 @@ export default {
           )
             ? Infinity
             : this.getVisiblePosition(filtered.indexOf(b));
-          return this.sortAscending
-            ? positionA - positionB
-            : positionB - positionA;
+          return positionA - positionB;
         } else if (this.sortBy === "name") {
           const nameA = a.name.toLowerCase();
           const nameB = b.name.toLowerCase();
           if (nameA < nameB) {
-            return this.sortAscending ? -1 : 1;
+            return -1;
           } else if (nameA > nameB) {
-            return this.sortAscending ? 1 : -1;
+            return 1;
           } else if (this.sortBy === "timeJoined") {
             const timeA = new Date(a.waitlistEntry.joinTime);
             const timeB = new Date(b.waitlistEntry.joinTime);
-            return this.sortAscending ? timeA - timeB : timeB - timeA;
+            return timeA - timeB;
           } else {
             return 0;
           }
@@ -166,21 +164,21 @@ export default {
         );
         this.waitlist = data;
         this.lastUpdated = new Date().toLocaleTimeString();
+
+        // this emit should update the Main component for totalWaitTime
+        this.$emit("waitlist-updated", this.waitlist);
       } catch (error) {
         console.error("Error fetching guests:", error);
       }
     },
     sortByPosition() {
       this.sortBy = "position";
-      this.sortAscending = true;
     },
     sortByName() {
       this.sortBy = "name";
-      this.sortAscending = true;
     },
     sortByTimeJoined() {
       this.sortBy = "timeJoined";
-      this.sortAscending = true;
     },
     getVisiblePosition(index) {
       let position = 1;
