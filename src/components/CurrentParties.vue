@@ -1,10 +1,17 @@
 <template>
   <section class="current-parties">
     <div class="container">
-      <h3 class="parties-title" v-if="view === 'staff'">
-        Total Parties ({{ filteredWaitlist.length }})
+      <h3 class="parties-title">
+        <span class="title-text">
+          {{
+            view === "staff"
+              ? `Total Parties (${filteredWaitlist.length})`
+              : "Current Waitlist"
+          }}
+        </span>
+        <RefreshButton @refresh="getGuests" />
       </h3>
-      <h3 class="parties-title" v-else>Current Waitlist</h3>
+
       <div class="parties-table-container">
         <table class="parties-table">
           <thead>
@@ -19,16 +26,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(party, index) in filteredWaitlist"
-              :key="index"
-              :class="{ highlighted: party.name === 'You' }"
-            >
+            <tr v-for="(party, index) in filteredWaitlist" :key="index">
               <td>{{ index + 1 }}</td>
               <td>{{ party.name }}</td>
               <td>{{ party.partySize }}</td>
-              <td v-if="view == 'staff'">{{ party.phoneNumber }}</td>
-              <td>{{ convertToLocalTime(party.waitlistEntry.joinTime) }}</td>
+              <td v-if="view === 'staff'">{{ party.phoneNumber }}</td>
+              <td>{{ formatDateTime(party.waitlistEntry.joinTime) }}</td>
               <td>
                 <span
                   :class="`status-badge ${party.waitlistEntry.status.toLowerCase()}`"
@@ -39,11 +42,10 @@
               <td v-if="view === 'staff'">
                 <template
                   v-if="
-                    party.waitlistEntry.status === 'WAITING' ||
-                    party.waitlistEntry.status === 'NOTIFIED'
+                    ['WAITING', 'NOTIFIED'].includes(party.waitlistEntry.status)
                   "
                 >
-                  <button @click="nextStatus(party)">Next</button>
+                  <button @click="updateStatus(party)">Next</button>
                   <button @click="cancelEntry(party)">Cancel</button>
                 </template>
               </td>
@@ -57,66 +59,54 @@
 
 <script>
 import axios from "axios";
-import { eventBus } from "../event-bus.js";
+import RefreshButton from "./RefreshButton.vue";
 
 export default {
   name: "CurrentParties",
+  components: { RefreshButton },
   props: {
-    view: {
-      type: String,
-      default: "guests",
-    },
+    view: { type: String, default: "guests" },
   },
   data() {
-    return {
-      waitlist: [],
-    };
+    return { waitlist: [] };
   },
   computed: {
     filteredWaitlist() {
-      return this.waitlist.filter((party) => {
-        const status = party.waitlistEntry.status.toLowerCase();
-        return (
-          this.view === "staff" || status === "waiting" || status === "notified"
-        );
-      });
+      return this.waitlist.filter(({ waitlistEntry }) =>
+        this.view === "staff"
+          ? true
+          : ["waiting", "notified"].includes(waitlistEntry.status.toLowerCase())
+      );
     },
   },
   methods: {
     async getGuests() {
       try {
-        const res = await axios.get(
+        const { data } = await axios.get(
           `${process.env.VUE_APP_API_URL}/api/guests`
         );
-        this.waitlist = res.data;
+        this.waitlist = data;
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching guests:", error);
       }
     },
-    convertToLocalTime(utcTime) {
-      return (
-        new Date(utcTime + "Z").toLocaleDateString() +
-        " " +
-        new Date(utcTime + "Z").toLocaleTimeString()
-      );
+    formatDateTime(utcTime) {
+      const date = new Date(`${utcTime}Z`);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     },
-    async nextStatus(party) {
-      const currentStatus = party.waitlistEntry.status;
-      const nextStatus = {
-        WAITING: "NOTIFIED",
-        NOTIFIED: "COMPLETED",
-      };
+    async updateStatus(party) {
+      const nextStatusMap = { WAITING: "NOTIFIED", NOTIFIED: "COMPLETED" };
+      const nextStatus = nextStatusMap[party.waitlistEntry.status];
+
+      if (!nextStatus) return;
 
       try {
         await axios.put(
-          `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/${nextStatus[currentStatus]}`
+          `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/${nextStatus}`
         );
-
-        party.waitlistEntry.status = nextStatus[currentStatus];
-
-        eventBus.emit("waitlist-updated");
+        party.waitlistEntry.status = nextStatus;
       } catch (error) {
-        console.error(error);
+        console.error("Error updating status:", error);
       }
     },
     async cancelEntry(party) {
@@ -130,22 +120,14 @@ export default {
             `${process.env.VUE_APP_API_URL}/api/waitlist/${party.name}/CANCELED`
           );
           party.waitlistEntry.status = "CANCELED";
-          eventBus.emit("waitlist-updated");
         } catch (error) {
-          console.error(error);
+          console.error("Error canceling entry:", error);
         }
       }
     },
   },
   mounted() {
     this.getGuests();
-
-    eventBus.on("waitlist-updated", () => {
-      this.getGuests();
-    });
-  },
-  beforeUnmount() {
-    eventBus.off("waitlist-updated");
   },
 };
 </script>

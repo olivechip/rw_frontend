@@ -28,7 +28,7 @@
       </div>
     </section>
 
-    <CurrentParties view="guests"/>
+    <CurrentParties view="guests" />
   </main>
 </template>
 
