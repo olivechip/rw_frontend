@@ -3,10 +3,20 @@
     <div class="header-content">
       <h1 class="logo">the soOP kitchen</h1>
       <nav class="desktop-nav">
-        <router-link to="/" class="nav-link">Waitlist</router-link>
+        <!-- available to public -->
+        <router-link to="/" class="nav-link">Home</router-link>
+        <router-link to="/view" class="nav-link">View Waitlist</router-link>
+
+        <!-- only if client is logged in as staff/manager/admin (host device) -->
+        <router-link to="/join" class="nav-link">Join Waitist</router-link>
+
+        <!-- only if client is logged in as manager/admin (all store devices) -->
+        <router-link to="/edit" class="nav-link">Edit Waitist</router-link>
+
+        <!-- add these if needed
         <router-link to="#menu" class="nav-link">Menu</router-link>
         <router-link to="#about" class="nav-link">About</router-link>
-        <router-link to="#contact" class="nav-link">Contact</router-link>
+        <router-link to="#contact" class="nav-link">Contact</router-link> -->
       </nav>
     </div>
     <!-- Mobile Navbar -->

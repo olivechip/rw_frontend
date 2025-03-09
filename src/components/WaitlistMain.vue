@@ -1,7 +1,5 @@
 <template>
   <main class="main">
-    <CurrentWaitlist view="guests" @waitlist-updated="updateWaitlist" />
-
     <section class="main">
       <div class="main-content">
         <h2 class="main-title">Join Our Waitlist</h2>
@@ -33,13 +31,9 @@
 </template>
 
 <script>
-import CurrentWaitlist from "./CurrentWaitlist.vue";
-
 export default {
   name: "WaitlistMain",
-  components: {
-    CurrentWaitlist,
-  },
+  components: {},
   data() {
     return {
       waitlist: [],
@@ -71,7 +65,7 @@ export default {
   },
   methods: {
     handleJoinWaitlist() {
-      this.$router.push("/join-waitlist");
+      this.$router.push("/join");
     },
     updateWaitlist(newWaitlist) {
       this.waitlist = newWaitlist;
