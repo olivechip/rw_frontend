@@ -42,7 +42,7 @@
                 <span
                   v-if="view === 'staff'"
                   class="sort-icon"
-                  @click="sortByPosition"
+                  @click="sortByTimeJoined"
                   >▼
                 </span>
               </th>
@@ -80,7 +80,7 @@
                 >
                   {{ party.waitlistEntry.status }}
                 </span>
-                <button
+                <span
                   v-if="
                     view === 'staff' &&
                     party.waitlistEntry.status !== 'COMPLETED' &&
@@ -88,8 +88,9 @@
                   "
                   @click="cancelEntry(party)"
                   aria-label="Cancel"
-                  class="cancel-button"
-                ></button>
+                  class="cancel-badge"
+                  >X</span
+                >
               </td>
             </tr>
           </tbody>
@@ -145,13 +146,15 @@ export default {
             return -1;
           } else if (nameA > nameB) {
             return 1;
-          } else if (this.sortBy === "timeJoined") {
-            const timeA = new Date(a.waitlistEntry.joinTime);
-            const timeB = new Date(b.waitlistEntry.joinTime);
-            return timeA - timeB;
           } else {
             return 0;
           }
+        } else if (this.sortBy === "timeJoined") {
+          const timeA = new Date(a.waitlistEntry.joinTime);
+          const timeB = new Date(b.waitlistEntry.joinTime);
+          return timeA - timeB;
+        } else {
+          return 0;
         }
       });
     },
@@ -337,6 +340,22 @@ export default {
 }
 
 .status-badge.clickable:hover {
+  opacity: 0.8;
+}
+
+.cancel-badge {
+  display: inline-block;
+  margin: 0.25rem 0.75rem;
+  padding: 0.25rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #a11c1c;
+  color: #a3a3a3;
+  cursor: pointer;
+}
+
+.cancel-badge:hover {
   opacity: 0.8;
 }
 </style>
