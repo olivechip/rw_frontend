@@ -3,7 +3,7 @@
     <WaitlistHeader />
     <section class="join-waitlist">
       <div class="container">
-        <h2 class="section-title"></h2>
+        <h2 class="section-title">Join Waitlist</h2>
 
         <div class="form-container">
           <form @submit.prevent="handleSubmit" class="waitlist-form">
