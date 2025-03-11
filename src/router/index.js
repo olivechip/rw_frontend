@@ -1,11 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../components/HomePage.vue";
+import AccountRegister from "@/components/AccountRegister.vue";
+// import AccountLogin from "@/components/AccountLogin.vue";
 import ViewPage from "@/components/ViewPage.vue";
 import JoinPage from "../components/JoinPage.vue";
 import EditPage from "../components/EditPage.vue";
 
 const routes = [
   { path: "/", name: "HomePage", component: HomePage },
+  { path: "/register", name: "AccountRegister", component: AccountRegister },
+  // { path: "/login", name: "AccountLogin", component: AccountLogin },
   { path: "/view", name: "ViewPage", component: ViewPage },
   { path: "/join", name: "JoinPage", component: JoinPage },
   { path: "/edit", name: "EditPage", component: EditPage },

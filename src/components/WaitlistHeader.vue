@@ -3,6 +3,9 @@
     <div class="header-content">
       <h1 class="logo">the soOP kitchen</h1>
       <nav class="desktop-nav">
+        <router-link to="/register" class="nav-link">Sign Up</router-link>
+        <router-link to="/login" class="nav-link">Login</router-link>
+
         <!-- available to public -->
         <router-link to="/" class="nav-link">Home</router-link>
         <router-link to="/view" class="nav-link">View Waitlist</router-link>
