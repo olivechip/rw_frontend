@@ -1,6 +1,5 @@
 <template>
   <div>
-    <WaitlistHeader />
     <section class="join-waitlist">
       <div class="container">
         <h2 class="section-title">Join Waitlist</h2>
@@ -58,25 +57,24 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
-import WaitlistHeader from "./WaitlistHeader.vue";
 import WaitlistFooter from "./WaitlistFooter.vue";
 
 export default {
   name: "JoinWaitlist",
   components: {
-    WaitlistHeader,
     WaitlistFooter,
   },
-  data() {
-    return {
-      name: "",
-      partySize: 1,
-      phoneNumber: "",
-    };
-  },
-  methods: {
-    validatePartySize(event) {
+  setup() {
+    const router = useRouter();
+
+    const name = ref("");
+    const partySize = ref(1);
+    const phoneNumber = ref("");
+
+    const validatePartySize = (event) => {
       const input = event.target;
       const value = input.value;
 
@@ -85,8 +83,9 @@ export default {
       } else {
         input.setCustomValidity("");
       }
-    },
-    validatePhoneNumber(event) {
+    };
+
+    const validatePhoneNumber = (event) => {
       const input = event.target;
       const value = input.value;
 
@@ -95,31 +94,31 @@ export default {
       } else {
         input.setCustomValidity("");
       }
-    },
-    async handleSubmit() {
+    };
+
+    const handleSubmit = async () => {
       try {
-        // AWS RDS: send a POST request to the server
         await axios.post(`${process.env.VUE_APP_API_URL}/api/waitlist/create`, {
-          name: this.name,
-          partySize: this.partySize,
-          phoneNumber: this.phoneNumber,
+          name: name.value,
+          partySize: partySize.value,
+          phoneNumber: phoneNumber.value,
         });
 
-        // LOCAL: emit an event with the new waitlist entry data
-        // console.log(this.name, this.partySize, this.phoneNumber);
-        // this.$emit("add-waitlist-entry", {
-        //   name: this.name,
-        //   partySize: this.partySize,
-        //   waitTime: 10,
-        //   status: "Waiting",
-        // });
-
         alert("You have been added to the waitlist!");
-        this.$router.push("/");
+        router.push("/");
       } catch (error) {
         alert("Error joining waitlist. Please try again later.");
       }
-    },
+    };
+
+    return {
+      name,
+      partySize,
+      phoneNumber,
+      validatePartySize,
+      validatePhoneNumber,
+      handleSubmit,
+    };
   },
 };
 </script>

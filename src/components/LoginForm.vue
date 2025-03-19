@@ -1,19 +1,9 @@
 <template>
-  <section class="staff-register">
+  <section class="login">
     <div class="container">
-      <h2 class="form-title">
-        {{ isAdminProp ? "Admin Registration" : "Staff Registration" }}
-      </h2>
+      <h2 class="form-title">Staff Login</h2>
       <div class="form-container">
-        <form @submit.prevent="handleStaffSubmit" class="register-form">
-          <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input type="text" id="firstName" v-model="firstName" required />
-          </div>
-          <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" v-model="lastName" required />
-          </div>
+        <form @submit.prevent="handleLogin" class="login-form">
           <div class="form-group">
             <label for="username">Username</label>
             <input
@@ -21,7 +11,6 @@
               id="username"
               v-model="username"
               autocomplete="username"
-              required
             />
           </div>
           <div class="form-group">
@@ -30,23 +19,13 @@
               type="password"
               id="password"
               v-model="password"
-              autocomplete="new-password"
+              autocomplete="current-password"
               required
             />
           </div>
-          <div class="form-group">
-            <label for="role">Role</label>
-            <select id="role" v-model="role" required :disabled="isAdminProp">
-              <option v-if="isAdminProp" value="ADMIN">ADMIN</option>
-              <template v-else>
-                <option value="STAFF">WAITSTAFF</option>
-                <option value="MANAGER">MANAGER</option>
-              </template>
-            </select>
-          </div>
           <div class="form-actions">
             <button type="submit" class="submit-button">
-              <span>Submit</span>
+              <span>Continue</span>
             </button>
           </div>
         </form>
@@ -56,45 +35,33 @@
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
-  props: {
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      firstName: "",
-      lastName: "",
-      username: "",
-      password: "",
-      role: this.isAdmin ? "ADMIN" : "",
-    };
-  },
-  computed: {
-    isAdminProp() {
-      return this.isAdmin;
-    },
-  },
-  methods: {
-    // sends staff form data to parent component
-    handleStaffSubmit() {
-      const staffData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        username: this.username,
-        password: this.password,
-        role: this.role,
+  name: "LoginForm",
+  setup(_, { emit }) {
+    const username = ref("");
+    const password = ref("");
+
+    const handleLogin = () => {
+      const loginData = {
+        username: username.value,
+        password: password.value,
       };
-      this.$emit("staff-submitted", staffData);
-    },
+      emit("login-submitted", loginData);
+    };
+
+    return {
+      username,
+      password,
+      handleLogin,
+    };
   },
 };
 </script>
 
-<style>
-.staff-register {
+<style scoped>
+.login {
   background-color: #242424;
   padding: 4rem 1rem;
 }
@@ -120,7 +87,7 @@ export default {
   transition: transform 0.5s ease-in-out;
 }
 
-.register-form {
+.login-form {
   padding: 2rem;
 }
 
@@ -137,8 +104,7 @@ export default {
   color: #a3a3a3;
 }
 
-.form-group input,
-.form-group textarea {
+.form-group input {
   width: 100%;
   padding: 0.75rem 1rem;
   background-color: #242424;
@@ -149,15 +115,9 @@ export default {
   transition: border-color 0.2s ease;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.form-group input:focus {
   outline: none;
   border-color: #dc2626;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 100px;
 }
 
 .form-actions {
@@ -180,9 +140,8 @@ export default {
   background-color: #b91c1c;
 }
 
-/* Responsive adjustments */
 @media (min-width: 768px) {
-  .register-form {
+  .login-form {
     padding: 2.5rem;
   }
 

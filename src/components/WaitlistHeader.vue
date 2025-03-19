@@ -1,43 +1,75 @@
 <template>
   <header class="header">
     <div class="header-content">
-      <h1 class="logo">the soOP kitchen</h1>
-      <nav class="desktop-nav">
-        <router-link to="/register" class="nav-link">Sign Up</router-link>
-        <router-link to="/login" class="nav-link">Login</router-link>
+      <router-link :to="staff ? '/app' : '/'" class="logo-link">
+        <h1 class="logo">
+          {{ staff?.restaurant?.name || "The Waitlist Manager" }}
+        </h1>
+      </router-link>
 
-        <!-- available to public -->
-        <router-link to="/" class="nav-link">Home</router-link>
+      <nav class="desktop-nav">
+        <!-- always visible -->
         <router-link to="/view" class="nav-link">View Waitlist</router-link>
 
-        <!-- only if client is logged in as staff/manager/admin (host device) -->
-        <router-link to="/join" class="nav-link">Join Waitist</router-link>
+        <!-- waitlist management for logged in staff -->
+        <template v-if="staff">
+          <router-link to="/join" class="nav-link" v-if="isStaffOrAbove">
+            Join Waitlist
+          </router-link>
+          <router-link to="/edit" class="nav-link" v-if="isAdminOrManager">
+            Edit Waitlist
+          </router-link>
+          <router-link to="" class="nav-link" @click.prevent="$emit('logout')">
+            Logout
+          </router-link>
+        </template>
 
-        <!-- only if client is logged in as manager/admin (all store devices) -->
-        <router-link to="/edit" class="nav-link">Edit Waitist</router-link>
-
-        <!-- add these if needed
-        <router-link to="#menu" class="nav-link">Menu</router-link>
-        <router-link to="#about" class="nav-link">About</router-link>
-        <router-link to="#contact" class="nav-link">Contact</router-link> -->
+        <!-- sign up or login if not logged in -->
+        <template v-if="!staff">
+          <router-link to="/register" class="nav-link">Sign Up</router-link>
+          <router-link to="/login" class="nav-link">Login</router-link>
+        </template>
       </nav>
     </div>
-    <!-- Mobile Navbar -->
-    <div v-if="isMenuOpen" class="mobile-menu">
+
+    <!-- <div v-if="isMenuOpen" class="mobile-menu">
       <a href="#menu" class="mobile-nav-link">Menu</a>
       <a href="#reservations" class="mobile-nav-link">Reservations</a>
       <a href="#about" class="mobile-nav-link">About</a>
       <a href="#contact" class="mobile-nav-link">Contact</a>
-    </div>
+    </div> -->
   </header>
 </template>
 
 <script>
+import { computed, ref } from "vue";
+import { useStore } from "vuex";
+
 export default {
   name: "WaitlistHeader",
-  data() {
+  setup() {
+    const store = useStore();
+    const staff = computed(() => store.state.staff);
+
+    // console.log("User in WaitlistHeader:", staff.value);
+
+    const isStaffOrAbove = computed(() => {
+      return (
+        staff.value && ["STAFF", "ADMIN", "MANAGER"].includes(staff.value.role)
+      );
+    });
+
+    const isAdminOrManager = computed(() => {
+      return staff.value && ["ADMIN", "MANAGER"].includes(staff.value.role);
+    });
+
+    const isMenuOpen = ref(false);
+
     return {
-      isMenuOpen: false,
+      staff,
+      isStaffOrAbove,
+      isAdminOrManager,
+      isMenuOpen,
     };
   },
 };
@@ -59,9 +91,17 @@ export default {
   align-items: center;
 }
 
+.logo-link {
+  text-decoration: none;
+  color: #d7d7d7;
+}
+
+.logo-link:hover {
+  cursor: pointer;
+}
+
 .logo {
   font-size: 1.5rem;
-  font-weight: bold;
 }
 
 .desktop-nav {

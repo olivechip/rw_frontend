@@ -1,18 +1,18 @@
 <template>
   <div>
-    <CurrentWaitlist view="staff" />
+    <WaitlistMain />
     <WaitlistFooter />
   </div>
 </template>
 
 <script>
-import CurrentWaitlist from "./CurrentWaitlist.vue";
+import WaitlistMain from "./WaitlistMain.vue";
 import WaitlistFooter from "./WaitlistFooter.vue";
 
 export default {
-  name: "EditWaitlist",
+  name: "AppDashboard",
   components: {
-    CurrentWaitlist,
+    WaitlistMain,
     WaitlistFooter,
   },
 };

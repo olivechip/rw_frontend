@@ -20,7 +20,7 @@
           </div>
           <div class="form-group">
             <label for="address">Address</label>
-            <input type="text" id="address" v-model="address" required />
+            <input type="address" id="address" v-model="address" required />
           </div>
           <div class="form-group">
             <label for="phoneNumber">Phone Number</label>
@@ -36,21 +36,32 @@
           </div>
           <div class="form-group">
             <label for="cuisineType">Cuisine Type</label>
-            <input type="text" id="cuisineType" v-model="cuisineType" />
+            <input
+              type="text"
+              id="cuisineType"
+              v-model="cuisineType"
+              placeholder="Italian, Indian, Chinese, Mexican, Greek, etc"
+              required
+            />
           </div>
           <div class="form-group">
-            <label for="website">Website</label>
+            <label for="website">Website (Optional)</label>
             <input type="url" id="website" v-model="website" />
           </div>
           <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" v-model="description"></textarea>
+            <label for="description">Description (Optional)</label>
+            <textarea
+              id="description"
+              v-model="description"
+              placeholder="Authentic and delicious Chinese cuisine. Come taste the difference."
+            ></textarea>
           </div>
           <div class="form-group">
             <label for="hoursOfOperation">Hours of Operation</label>
             <textarea
               id="hoursOfOperation"
               v-model="hoursOfOperation"
+              placeholder="Mon-Thu: 11am - 10pm, Fri-Sat: 11am - 11pm, Sun: 11am - 9pm"
             ></textarea>
           </div>
           <div class="form-actions">
@@ -102,7 +113,7 @@ export default {
         description: this.description,
         hoursOfOperation: this.hoursOfOperation,
       };
-      this.$emit("restaurant-created", restaurantData);
+      this.$emit("restaurant-submitted", restaurantData);
     },
   },
 };

@@ -2,7 +2,7 @@
   <main class="main">
     <section class="main">
       <div class="main-content">
-        <h2 class="main-title">Join Our Waitlist</h2>
+        <h3 class="main-title">Join Our Waitlist</h3>
         <p class="main-description">
           We're currently at capacity. Add your name to our waitlist and we'll
           notify you when a table becomes available.
@@ -11,8 +11,9 @@
           Join Waitlist
         </button>
         <div class="wait-info">
-          <p>Current estimated wait time: {{ totalWaitTime }} minutes</p>
           <p>We'll send you a text message when your table is almost ready.</p>
+          <br />
+          <p>Current estimated wait time: {{ totalWaitTime }} minutes</p>
         </div>
       </div>
     </section>
@@ -79,7 +80,7 @@ export default {
 /* Main Section */
 .main {
   flex: 1;
-  padding: 4rem 1rem;
+  padding: 2rem 1rem 4rem 1rem;
   text-align: center;
 }
 
@@ -89,13 +90,12 @@ export default {
 }
 
 .main-title {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
 }
 
 .main-description {
-  font-size: 1.25rem;
   margin-bottom: 2rem;
 }
 
@@ -127,7 +127,7 @@ export default {
 
 .steps-title {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin-bottom: 3rem;
 }
 

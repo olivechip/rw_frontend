@@ -3,17 +3,28 @@
     <div class="footer-content">
       <div class="footer-grid">
         <div class="footer-section">
-          <h3 class="footer-title">the soOP kitchen</h3>
+          <h3 class="footer-title">{{ staff?.restaurant?.name }}</h3>
           <ul class="footer-list">
-            <li>authentic OP type shi</li>
+            <li>{{ staff?.restaurant?.cuisineType }} Cuisine</li>
+            <li class="website-link" v-if="staff?.restaurant?.website">
+              <a :href="staff.restaurant.website" target="_blank"
+                >Visit Our Website</a
+              >
+            </li>
+            <li
+              class="restaurant-description"
+              v-if="staff?.restaurant?.description"
+            >
+              {{ staff.restaurant.description }}
+            </li>
           </ul>
         </div>
 
-        <div class="footer-section">
+        <div v-if="staff?.restaurant?.hoursOfOperation" class="footer-section">
           <h3 class="footer-title">Hours</h3>
           <ul class="footer-list">
-            <li v-for="(schedule, index) in hours" :key="index">
-              {{ schedule }}
+            <li>
+              {{ staff.restaurant.hoursOfOperation }}
             </li>
           </ul>
         </div>
@@ -21,30 +32,45 @@
         <div class="footer-section">
           <h3 class="footer-title">Contact</h3>
           <ul class="footer-list">
-            <li>(000) 123-4567</li>
-            <li>123 fake street, faketown, USA</li>
+            <li>{{ staff?.restaurant?.address }}</li>
+            <li>{{ staff?.restaurant?.phoneNumber }}</li>
+            <li>{{ staff?.restaurant?.email }}</li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <p>&copy; {{ currentYear }} the soOP kitchen. All rights reserved.</p>
+        <p>
+          &copy; {{ currentYear }} The Waitlist Manager. All rights reserved.
+        </p>
       </div>
     </div>
   </footer>
 </template>
 
 <script>
+import { computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+
 export default {
   name: "WaitlistFooter",
-  data() {
+  setup() {
+    const store = useStore();
+    const router = useRouter();
+    const staff = computed(() => store.state.staff) || {};
+
+    const currentYear = new Date().getFullYear();
+
+    onMounted(() => {
+      if (!staff.value) {
+        router.push("/");
+      }
+    });
+
     return {
-      hours: [
-        "Mon-Thu: 11am - 10pm",
-        "Fri-Sat: 11am - 11pm",
-        "Sun: 11am - 9pm",
-      ],
-      currentYear: new Date().getFullYear(),
+      staff,
+      currentYear,
     };
   },
 };
@@ -79,6 +105,15 @@ export default {
 
 .footer-list li {
   margin-bottom: 0.5rem;
+}
+
+.website-link {
+  text-decoration: none;
+  color: #d7d7d7;
+}
+
+.restaurant-description {
+  font-style: italic;
 }
 
 .footer-bottom {
