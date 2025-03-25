@@ -21,11 +21,13 @@ export default {
 
     const handleLogin = async (loginData) => {
       try {
+        console.log("Logging in...");
         const response = await axios.post(
           `${process.env.VUE_APP_API_URL}/api/auth/login`,
           loginData
         );
-        console.log(response);
+
+        console.log(response.data);
         store.dispatch("setStaff", response.data);
 
         alert("Login successful!");

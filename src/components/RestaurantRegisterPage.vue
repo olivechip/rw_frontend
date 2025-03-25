@@ -41,7 +41,7 @@ export default {
 
         showStaffForm.value = true;
         showRestaurantForm.value = false;
-        alert("Restaurant created, now create the ADMIN account");
+        alert("Restaurant created, now create the ADMIN account!");
       } catch (error) {
         console.error("Restaurant creation error:", error);
         alert("Error creating restaurant. Please try again.");
@@ -56,27 +56,32 @@ export default {
         });
 
         showStaffForm.value = false;
-        alert("Admin account created successfully! Logging in...");
-        await handleLogin(staffData);
+        alert("Admin account created successfully!");
+
+        const loginData = {
+          username: staffData.username,
+          password: staffData.password,
+        };
+
+        await handleLogin(loginData);
       } catch (error) {
         console.error("Staff creation error:", error);
         alert("Error creating staff account. Please try again.");
       }
     };
 
-    const handleLogin = async (staffData) => {
+    const handleLogin = async (loginData) => {
       try {
-        const loginResponse = await axios.post(
+        console.log("Logging in...");
+        const response = await axios.post(
           `${process.env.VUE_APP_API_URL}/api/auth/login`,
-          {
-            username: staffData.username,
-            password: staffData.password,
-          }
+          loginData
         );
 
-        console.log(loginResponse);
-        store.dispatch("setStaff", loginResponse.data);
+        console.log(response.data);
+        store.dispatch("setStaff", response.data);
 
+        alert("Login successful!");
         router.push("/app");
       } catch (error) {
         console.error("Login error:", error);

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <WaitlistHeader @logout="logout" />
+    <WaitlistHeader @handleLogout="handleLogout" />
     <router-view />
   </div>
 </template>
@@ -19,7 +19,7 @@ export default {
     const router = useRouter();
     const staff = computed(() => store.state.staff || { restaurant: {} });
 
-    const logout = async () => {
+    const handleLogout = async () => {
       try {
         console.log("Logging out...");
         await axios.post(
@@ -28,8 +28,9 @@ export default {
           { withCredentials: true }
         );
         store.dispatch("clearStaff");
-        router.push("/");
+
         alert("Logout successful!");
+        router.push("/");
       } catch (error) {
         console.error("Logout error:", error);
         alert("Logout failed. Please try again.");
@@ -38,7 +39,7 @@ export default {
 
     const checkLoginStatus = async () => {
       try {
-        console.log("Checking login status...");
+        console.log("Checking auth status...");
         const response = await axios.get(
           `${process.env.VUE_APP_API_URL}/api/auth/status`,
           { withCredentials: true }
@@ -65,7 +66,7 @@ export default {
 
     return {
       staff,
-      logout,
+      handleLogout,
       checkLoginStatus,
     };
   },

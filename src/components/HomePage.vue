@@ -9,7 +9,7 @@
           Our intuitive platform helps you streamline your queues, reduce wait
           times, and improve customer satisfaction.
         </p>
-        <button class="register-button" @click="handleRegisterButton">
+        <button class="register-button" @click="navigateToRegister">
           Try It Out
         </button>
       </div>
@@ -29,12 +29,12 @@ export default {
   setup() {
     const router = useRouter();
 
-    const handleRegisterButton = () => {
+    const navigateToRegister = () => {
       router.push("/register");
     };
 
     return {
-      handleRegisterButton,
+      navigateToRegister,
     };
   },
 };

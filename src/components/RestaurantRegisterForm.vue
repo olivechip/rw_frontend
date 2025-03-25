@@ -41,6 +41,7 @@
               id="cuisineType"
               v-model="cuisineType"
               placeholder="Italian, Indian, Chinese, Mexican, Greek, etc"
+              value="Italian, Indian, Chinese, Mexican, Greek, etc"
               required
             />
           </div>
@@ -54,6 +55,7 @@
               id="description"
               v-model="description"
               placeholder="Authentic and delicious Chinese cuisine. Come taste the difference!"
+              value="Authentic and delicious Chinese cuisine. Come taste the difference!"
             ></textarea>
           </div>
           <div class="form-group">
@@ -62,6 +64,7 @@
               id="hoursOfOperation"
               v-model="hoursOfOperation"
               placeholder="Mon-Thu: 11am - 10pm, Fri-Sat: 11am - 11pm, Sun: 11am - 9pm"
+              value="Mon-Thu: 11am - 10pm, Fri-Sat: 11am - 11pm, Sun: 11am - 9pm"
             ></textarea>
           </div>
           <div class="form-actions">

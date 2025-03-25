@@ -5,24 +5,24 @@ export default createStore({
     staff: null,
   },
   mutations: {
-    setStaff(state, staff) {
+    SET_STAFF(state, staff) {
       state.staff = staff;
     },
-    clearStaff(state) {
+    CLEAR_STAFF(state) {
       state.staff = null;
     },
   },
   actions: {
     setStaff({ commit }, staff) {
-      commit("setStaff", staff);
+      commit("SET_STAFF", staff);
     },
     clearStaff({ commit }) {
-      commit("clearStaff");
+      commit("CLEAR_STAFF");
     },
   },
   getters: {
-    staff(state) {
-      return state.staff;
-    },
+    staff: (state) => state.staff,
+    isLoggedIn: (state) => !!state.staff,
+    restaurantId: (state) => state.staff?.restaurantId,
   },
 });
