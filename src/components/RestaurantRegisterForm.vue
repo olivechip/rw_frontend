@@ -53,7 +53,7 @@
             <textarea
               id="description"
               v-model="description"
-              placeholder="Authentic and delicious Chinese cuisine. Come taste the difference."
+              placeholder="Authentic and delicious Chinese cuisine. Come taste the difference!"
             ></textarea>
           </div>
           <div class="form-group">

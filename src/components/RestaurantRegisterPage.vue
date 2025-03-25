@@ -37,7 +37,6 @@ export default {
           `${process.env.VUE_APP_API_URL}/api/restaurants/create`,
           data
         );
-        Object.assign(restaurantData, restaurantResponse.data);
         resId.value = restaurantResponse.data.id;
 
         showStaffForm.value = true;

@@ -57,8 +57,9 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import axios from "axios";
 import WaitlistFooter from "./WaitlistFooter.vue";
 
@@ -69,10 +70,15 @@ export default {
   },
   setup() {
     const router = useRouter();
+    const store = useStore();
 
     const name = ref("");
     const partySize = ref(1);
     const phoneNumber = ref("");
+
+    const resId = computed(() => {
+      return store.state.staff?.restaurant?.id;
+    });
 
     const validatePartySize = (event) => {
       const input = event.target;
@@ -97,15 +103,22 @@ export default {
     };
 
     const handleSubmit = async () => {
+      if (!resId.value) {
+        alert("Restaurant ID not found. Please try again.");
+        return;
+      }
       try {
-        await axios.post(`${process.env.VUE_APP_API_URL}/api/waitlist/create`, {
-          name: name.value,
-          partySize: partySize.value,
-          phoneNumber: phoneNumber.value,
-        });
+        await axios.post(
+          `${process.env.VUE_APP_API_URL}/api/waitlist/create?resId=${resId.value}`,
+          {
+            name: name.value,
+            partySize: partySize.value,
+            phoneNumber: phoneNumber.value,
+          }
+        );
 
         alert("You have been added to the waitlist!");
-        router.push("/");
+        router.push("/app");
       } catch (error) {
         alert("Error joining waitlist. Please try again later.");
       }
@@ -118,6 +131,7 @@ export default {
       validatePartySize,
       validatePhoneNumber,
       handleSubmit,
+      resId,
     };
   },
 };
