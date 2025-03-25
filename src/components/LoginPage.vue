@@ -25,6 +25,7 @@ export default {
           `${process.env.VUE_APP_API_URL}/api/auth/login`,
           loginData
         );
+        console.log(response);
         store.dispatch("setStaff", response.data);
 
         alert("Login successful!");

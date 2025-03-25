@@ -109,6 +109,7 @@ export default {
   components: { RefreshButton },
   props: {
     view: { type: String, default: "guests" },
+    resId: { type: Number, default: null },
   },
   data() {
     return {

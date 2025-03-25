@@ -10,9 +10,12 @@
 </template>
 
 <script>
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import axios from "axios";
 import RestaurantRegisterForm from "./RestaurantRegisterForm.vue";
 import StaffRegisterForm from "./StaffRegisterForm.vue";
-import axios from "axios";
 
 export default {
   name: "RestaurantRegisterPage",
@@ -20,49 +23,76 @@ export default {
     RestaurantRegisterForm,
     StaffRegisterForm,
   },
-  data() {
-    return {
-      showRestaurantForm: true,
-      showStaffForm: false,
-      restaurantData: {},
-      resId: null,
-    };
-  },
-  methods: {
-    async handleRestaurantSubmit(restaurantData) {
+  setup() {
+    const showRestaurantForm = ref(true);
+    const showStaffForm = ref(false);
+    const restaurantData = reactive({});
+    const resId = ref(null);
+    const router = useRouter();
+    const store = useStore();
+
+    const handleRestaurantSubmit = async (data) => {
       try {
         const restaurantResponse = await axios.post(
           `${process.env.VUE_APP_API_URL}/api/restaurants/create`,
-          restaurantData
+          data
         );
-        this.restaurantData = restaurantResponse.data;
-        this.resId = restaurantResponse.data.id;
+        Object.assign(restaurantData, restaurantResponse.data);
+        resId.value = restaurantResponse.data.id;
 
-        this.showStaffForm = true;
-        this.showRestaurantForm = false;
+        showStaffForm.value = true;
+        showRestaurantForm.value = false;
         alert("Restaurant created, now create the ADMIN account");
       } catch (error) {
         console.error("Restaurant creation error:", error);
         alert("Error creating restaurant. Please try again.");
       }
-    },
-    async handleStaffSubmit(staffData) {
+    };
+
+    const handleStaffSubmit = async (staffData) => {
       try {
         await axios.post(`${process.env.VUE_APP_API_URL}/api/staff/create`, {
           staff: staffData,
-          restaurantId: this.resId,
+          restaurantId: resId.value,
         });
 
-        this.showStaffForm = false;
-
-        this.$emit("login-success");
-        alert("Admin account created successfully!");
-        this.$router.push("/app");
+        showStaffForm.value = false;
+        alert("Admin account created successfully! Logging in...");
+        await handleLogin(staffData);
       } catch (error) {
         console.error("Staff creation error:", error);
         alert("Error creating staff account. Please try again.");
       }
-    },
+    };
+
+    const handleLogin = async (staffData) => {
+      try {
+        const loginResponse = await axios.post(
+          `${process.env.VUE_APP_API_URL}/api/auth/login`,
+          {
+            username: staffData.username,
+            password: staffData.password,
+          }
+        );
+
+        console.log(loginResponse);
+        store.dispatch("setStaff", loginResponse.data);
+
+        router.push("/app");
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("Login failed. Please check your credentials.");
+      }
+    };
+
+    return {
+      showRestaurantForm,
+      showStaffForm,
+      restaurantData,
+      resId,
+      handleRestaurantSubmit,
+      handleStaffSubmit,
+    };
   },
 };
 </script>
