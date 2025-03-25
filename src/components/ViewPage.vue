@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CurrentWaitlist :view="'guests'" :resId="resId" />
+    <CurrentWaitlist :view="'guests'" :restaurantId="restaurantId" />
     <WaitlistFooter />
   </div>
 </template>
@@ -20,12 +20,12 @@ export default {
   setup() {
     const store = useStore();
 
-    const resId = computed(() => {
+    const restaurantId = computed(() => {
       return store.state.staff?.restaurant?.id;
     });
 
     return {
-      resId,
+      restaurantId,
     };
   },
 };

@@ -27,7 +27,7 @@ export default {
     const showRestaurantForm = ref(true);
     const showStaffForm = ref(false);
     const restaurantData = reactive({});
-    const resId = ref(null);
+    const restaurantId = ref(null);
     const router = useRouter();
     const store = useStore();
 
@@ -37,7 +37,7 @@ export default {
           `${process.env.VUE_APP_API_URL}/api/restaurants/create`,
           data
         );
-        resId.value = restaurantResponse.data.id;
+        restaurantId.value = restaurantResponse.data.id;
 
         showStaffForm.value = true;
         showRestaurantForm.value = false;
@@ -52,7 +52,7 @@ export default {
       try {
         await axios.post(`${process.env.VUE_APP_API_URL}/api/staff/create`, {
           staff: staffData,
-          restaurantId: resId.value,
+          restaurantId: restaurantId.value,
         });
 
         showStaffForm.value = false;
@@ -88,7 +88,7 @@ export default {
       showRestaurantForm,
       showStaffForm,
       restaurantData,
-      resId,
+      restaurantId,
       handleRestaurantSubmit,
       handleStaffSubmit,
     };

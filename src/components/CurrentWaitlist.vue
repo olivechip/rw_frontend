@@ -9,7 +9,7 @@
               : "Current Waitlist"
           }}
         </span>
-        <RefreshButton @refresh="getGuests" />
+        <RefreshButton @refresh="getWaitlist" />
         <p class="tiny-text">last updated: {{ lastUpdated }}</p>
       </h3>
 
@@ -101,46 +101,45 @@
 </template>
 
 <script>
+import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 import RefreshButton from "./RefreshButton.vue";
+import { useStore } from "vuex";
 
 export default {
   name: "CurrentWaitlist",
   components: { RefreshButton },
   props: {
     view: { type: String, default: "guests" },
-    resId: { type: Number, default: null },
   },
-  data() {
-    return {
-      waitlist: [],
-      lastUpdated: new Date().toLocaleTimeString(),
-      sortAscending: true,
-      sortBy: null,
-    };
-  },
-  computed: {
-    filteredWaitlist() {
-      const filtered = this.waitlist.filter(({ waitlistEntry }) =>
-        this.view === "staff"
+  setup(props, { emit }) {
+    const store = useStore();
+    const waitlist = ref([]);
+    const lastUpdated = ref(new Date().toLocaleTimeString());
+    const sortBy = ref(null);
+    const restaurantId = computed(() => store.state.staff?.restaurant?.id);
+
+    const filteredWaitlist = computed(() => {
+      const filtered = waitlist.value.filter(({ waitlistEntry }) =>
+        props.view === "staff"
           ? true
           : ["waiting", "notified"].includes(waitlistEntry.status.toLowerCase())
       );
 
       return [...filtered].sort((a, b) => {
-        if (this.sortBy === "position") {
+        if (sortBy.value === "position") {
           const positionA = ["CANCELED", "COMPLETED"].includes(
             a.waitlistEntry.status
           )
             ? Infinity
-            : this.getVisiblePosition(filtered.indexOf(a));
+            : getVisiblePosition(filtered.indexOf(a));
           const positionB = ["CANCELED", "COMPLETED"].includes(
             b.waitlistEntry.status
           )
             ? Infinity
-            : this.getVisiblePosition(filtered.indexOf(b));
+            : getVisiblePosition(filtered.indexOf(b));
           return positionA - positionB;
-        } else if (this.sortBy === "name") {
+        } else if (sortBy.value === "name") {
           const nameA = a.name.toLowerCase();
           const nameB = b.name.toLowerCase();
           if (nameA < nameB) {
@@ -150,7 +149,7 @@ export default {
           } else {
             return 0;
           }
-        } else if (this.sortBy === "timeJoined") {
+        } else if (sortBy.value === "timeJoined") {
           const timeA = new Date(a.waitlistEntry.joinTime);
           const timeB = new Date(b.waitlistEntry.joinTime);
           return timeA - timeB;
@@ -158,50 +157,58 @@ export default {
           return 0;
         }
       });
-    },
-  },
-  methods: {
-    async getGuests() {
+    });
+
+    const getWaitlist = async () => {
+      if (!restaurantId.value) {
+        console.error("Restaurant ID not found.");
+        return;
+      }
       try {
         const { data } = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/guests`
+          `${process.env.VUE_APP_API_URL}/api/waitlist?restaurantId=${restaurantId.value}`
         );
-        this.waitlist = data;
-        this.lastUpdated = new Date().toLocaleTimeString();
+        waitlist.value = data;
+        lastUpdated.value = new Date().toLocaleTimeString();
 
-        // this emit should update the Main component for totalWaitTime
-        this.$emit("waitlist-updated", this.waitlist);
+        emit("waitlist-updated", waitlist.value);
       } catch (error) {
         console.error("Error fetching guests:", error);
       }
-    },
-    sortByPosition() {
-      this.sortBy = "position";
-    },
-    sortByName() {
-      this.sortBy = "name";
-    },
-    sortByTimeJoined() {
-      this.sortBy = "timeJoined";
-    },
-    getVisiblePosition(index) {
+    };
+
+    const sortByPosition = () => {
+      sortBy.value = "position";
+    };
+
+    const sortByName = () => {
+      sortBy.value = "name";
+    };
+
+    const sortByTimeJoined = () => {
+      sortBy.value = "timeJoined";
+    };
+
+    const getVisiblePosition = (index) => {
       let position = 1;
       for (let i = 0; i < index; i++) {
         if (
           !["COMPLETED", "CANCELED"].includes(
-            this.filteredWaitlist[i].waitlistEntry.status
+            filteredWaitlist.value[i].waitlistEntry.status
           )
         ) {
           position++;
         }
       }
       return position;
-    },
-    formatDateTime(utcTime) {
+    };
+
+    const formatDateTime = (utcTime) => {
       const date = new Date(`${utcTime}Z`);
       return `${date.toLocaleTimeString()}`;
-    },
-    async updateStatus(party) {
+    };
+
+    const updateStatus = async (party) => {
       const nextStatusMap = { WAITING: "NOTIFIED", NOTIFIED: "COMPLETED" };
       const nextStatus = nextStatusMap[party.waitlistEntry.status];
 
@@ -217,13 +224,14 @@ export default {
             `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/${nextStatus}`
           );
           party.waitlistEntry.status = nextStatus;
-          this.getGuests();
+          getWaitlist();
         } catch (error) {
           console.error("Error updating status:", error);
         }
       }
-    },
-    async cancelEntry(party) {
+    };
+
+    const cancelEntry = async (party) => {
       if (
         confirm(
           `Are you sure you want to mark ${party.name}'s status as CANCELED?`
@@ -234,15 +242,31 @@ export default {
             `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/CANCELED`
           );
           party.waitlistEntry.status = "CANCELED";
-          this.getGuests();
+          getWaitlist();
         } catch (error) {
           console.error("Error canceling entry:", error);
         }
       }
-    },
-  },
-  mounted() {
-    this.getGuests();
+    };
+
+    onMounted(() => {
+      getWaitlist();
+    });
+
+    return {
+      waitlist,
+      lastUpdated,
+      filteredWaitlist,
+      getWaitlist,
+      sortByPosition,
+      sortByName,
+      sortByTimeJoined,
+      getVisiblePosition,
+      formatDateTime,
+      updateStatus,
+      cancelEntry,
+      restaurantId,
+    };
   },
 };
 </script>

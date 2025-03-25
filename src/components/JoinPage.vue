@@ -76,7 +76,7 @@ export default {
     const partySize = ref(1);
     const phoneNumber = ref("");
 
-    const resId = computed(() => {
+    const restaurantId = computed(() => {
       return store.state.staff?.restaurant?.id;
     });
 
@@ -103,13 +103,13 @@ export default {
     };
 
     const handleSubmit = async () => {
-      if (!resId.value) {
+      if (!restaurantId.value) {
         alert("Restaurant ID not found. Please try again.");
         return;
       }
       try {
         await axios.post(
-          `${process.env.VUE_APP_API_URL}/api/waitlist/create?resId=${resId.value}`,
+          `${process.env.VUE_APP_API_URL}/api/waitlist/create?restaurantId=${restaurantId.value}`,
           {
             name: name.value,
             partySize: partySize.value,
@@ -131,7 +131,7 @@ export default {
       validatePartySize,
       validatePhoneNumber,
       handleSubmit,
-      resId,
+      restaurantId,
     };
   },
 };
