@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <WaitlistHeader @handleLogout="handleLogout" />
+    <WaitlistHeader @logout-submitted="handleLogout" />
     <router-view />
   </div>
 </template>

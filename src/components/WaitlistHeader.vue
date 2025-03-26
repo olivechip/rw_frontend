@@ -3,7 +3,7 @@
     <div class="header-content">
       <router-link :to="staff ? '/app' : '/'" class="logo-link">
         <h1 class="logo">
-          {{ staff?.restaurant?.name || "The Waitlist Manager" }}
+          {{ restaurant?.name || "The Waitlist Manager" }}
         </h1>
       </router-link>
 
@@ -19,7 +19,7 @@
           <router-link to="/edit" class="nav-link" v-if="isAdminOrManager">
             Edit Waitlist
           </router-link>
-          <router-link to="" class="nav-link" @click.prevent="$emit('logout')">
+          <router-link to="" class="nav-link" @click.prevent="$emit('logout-submitted')">
             Logout
           </router-link>
         </template>
@@ -49,7 +49,8 @@ export default {
   name: "WaitlistHeader",
   setup() {
     const store = useStore();
-    const staff = computed(() => store.state.staff);
+    const staff = computed(() => store.getters.staff);
+    const restaurant = computed(() => store.getters.restaurant);
 
     const isStaffOrAbove = computed(() => {
       return (
@@ -65,6 +66,7 @@ export default {
 
     return {
       staff,
+      restaurant,
       isStaffOrAbove,
       isAdminOrManager,
       isMenuOpen,

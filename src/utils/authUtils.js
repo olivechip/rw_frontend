@@ -13,7 +13,7 @@ export async function performLogin(loginData, store, router) {
       `${process.env.VUE_APP_API_URL}/api/restaurants/${loginResponse.data.restaurantId}`
     );
 
-    store.dispatch("setRestaurantData", restaurantResponse.data);
+    store.dispatch("setRestaurant", restaurantResponse.data);
 
     router.push("/app");
   } catch (error) {
