@@ -23,6 +23,9 @@
               required
             />
           </div>
+          <div v-if="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
           <div class="form-actions">
             <button type="submit" class="submit-button">
               <span>Continue</span>
@@ -39,9 +42,13 @@ import { ref } from "vue";
 
 export default {
   name: "LoginForm",
-  setup(_, { emit }) {
+  props: {
+    error: String,
+  },
+  setup(props, { emit }) {
     const username = ref("");
     const password = ref("");
+    const errorMessage = ref(null);
 
     const handleLogin = () => {
       const loginData = {
@@ -49,13 +56,31 @@ export default {
         password: password.value,
       };
       emit("login-submitted", loginData);
+      username.value = "";
+      password.value = "";
     };
 
     return {
       username,
       password,
       handleLogin,
+      errorMessage,
     };
+  },
+  watch: {
+    error(newError) {
+      this.errorMessage = newError;
+    },
+    username() {
+      if (this.error === null) {
+        this.errorMessage = null;
+      }
+    },
+    password() {
+      if (this.error === null) {
+        this.errorMessage = null;
+      }
+    },
   },
 };
 </script>
@@ -138,6 +163,12 @@ export default {
 
 .submit-button:hover {
   background-color: #b91c1c;
+}
+
+.error-message {
+  color: #dc2626;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 @media (min-width: 768px) {

@@ -18,6 +18,10 @@ export default createStore({
     CLEAR_RESTAURANT(state) {
       state.restaurant = null;
     },
+    CLEAR_STORE(state) {
+      state.staff = null;
+      state.restaurant = null;
+    },
   },
   actions: {
     setStaff({ commit }, staff) {
@@ -31,6 +35,9 @@ export default createStore({
     },
     clearRestaurant({ commit }) {
       commit("CLEAR_RESTAURANT");
+    },
+    clearStore({ commit }) {
+      commit("CLEAR_STORE");
     },
   },
   getters: {

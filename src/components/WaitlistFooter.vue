@@ -5,7 +5,9 @@
         <div class="footer-section">
           <h3 class="footer-title">{{ restaurant?.name }}</h3>
           <ul class="footer-list">
-            <li>{{ restaurant?.cuisineType }} Cuisine</li>
+            <li v-if="restaurant?.cuisineType">
+              {{ restaurant.cuisineType }} Cuisine
+            </li>
             <li class="website-link" v-if="restaurant?.website">
               <a :href="restaurant.website" target="_blank"
                 >Visit Our Website</a
@@ -26,12 +28,19 @@
           </ul>
         </div>
 
-        <div class="footer-section">
+        <div
+          v-if="
+            restaurant?.address || restaurant?.phoneNumber || restaurant?.email
+          "
+          class="footer-section"
+        >
           <h3 class="footer-title">Contact</h3>
           <ul class="footer-list">
-            <li>{{ restaurant?.address }}</li>
-            <li>{{ restaurant?.phoneNumber }}</li>
-            <li>{{ restaurant?.email }}</li>
+            <li v-if="restaurant?.address">{{ restaurant?.address }}</li>
+            <li v-if="restaurant?.phoneNumber">
+              {{ restaurant?.phoneNumber }}
+            </li>
+            <li v-if="restaurant?.email">{{ restaurant?.email }}</li>
           </ul>
         </div>
       </div>

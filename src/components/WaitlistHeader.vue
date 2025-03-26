@@ -19,7 +19,11 @@
           <router-link to="/edit" class="nav-link" v-if="isAdminOrManager">
             Edit Waitlist
           </router-link>
-          <router-link to="" class="nav-link" @click.prevent="$emit('logout-submitted')">
+          <router-link
+            to=""
+            class="nav-link"
+            @click.prevent="$emit('logout-submitted')"
+          >
             Logout
           </router-link>
         </template>

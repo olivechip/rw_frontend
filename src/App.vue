@@ -27,7 +27,8 @@ export default {
           {},
           { withCredentials: true }
         );
-        store.dispatch("clearStaff");
+
+        store.dispatch("clearStore");
 
         alert("Logout successful!");
         router.push("/");
@@ -44,17 +45,17 @@ export default {
           `${process.env.VUE_APP_API_URL}/api/auth/status`,
           { withCredentials: true }
         );
-        console.log(response.data);
+
         if (response.data.isLoggedIn) {
-          store.dispatch("setStaff", response.data);
-          console.log("Logged in as:", store.state.staff);
+          store.dispatch("setStaff", response.data.staff);
+          store.dispatch("setRestaurant", response.data.restaurant);
         } else {
-          console.log("No staff is logged in");
-          store.dispatch("clearStaff");
+          console.log("No one is logged in.");
+          store.dispatch("clearStore");
         }
       } catch (error) {
         console.error("Check login status error:", error);
-        store.dispatch("clearStaff");
+        store.dispatch("clearStore");
       }
     };
 
