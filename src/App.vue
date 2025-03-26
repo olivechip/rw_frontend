@@ -6,9 +6,9 @@
 </template>
 
 <script>
-import { useStore } from "vuex";
 import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import WaitlistHeader from "./components/WaitlistHeader.vue";
 import axios from "axios";
 
@@ -17,7 +17,9 @@ export default {
   setup() {
     const store = useStore();
     const router = useRouter();
-    const staff = computed(() => store.state.staff || { restaurant: {} });
+
+    const staff = computed(() => store.state.staff);
+    const isLoggedIn = computed(() => store.getters.isLoggedIn);
 
     const handleLogout = async () => {
       try {
@@ -49,18 +51,28 @@ export default {
         if (response.data.isLoggedIn) {
           store.dispatch("setStaff", response.data.staff);
           store.dispatch("setRestaurant", response.data.restaurant);
-        } else {
-          console.log("No one is logged in.");
+        }
+
+        if (!store.getters.isLoggedIn) {
           store.dispatch("clearStore");
+          router.push("/");
         }
       } catch (error) {
         console.error("Check login status error:", error);
+        if (error.response && error.response.status === 401) {
+          alert("Your session has expired. Please log in again.");
+        } else {
+          alert(
+            "An error occurred while checking your login status. Please try again later."
+          );
+        }
         store.dispatch("clearStore");
+        router.push("/");
       }
     };
 
     onMounted(() => {
-      if (!staff.value) {
+      if (!isLoggedIn.value) {
         checkLoginStatus();
       }
     });
