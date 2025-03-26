@@ -20,9 +20,7 @@ export default {
   setup() {
     const store = useStore();
 
-    const restaurantId = computed(() => {
-      return store.state.staff?.restaurant?.id;
-    });
+    const restaurantId = computed(() => store.getters.restaurantId);
 
     return {
       restaurantId,
