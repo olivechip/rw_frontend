@@ -3,28 +3,25 @@
     <div class="footer-content">
       <div class="footer-grid">
         <div class="footer-section">
-          <h3 class="footer-title">{{ staff?.restaurant?.name }}</h3>
+          <h3 class="footer-title">{{ restaurant?.name }}</h3>
           <ul class="footer-list">
-            <li>{{ staff?.restaurant?.cuisineType }} Cuisine</li>
-            <li class="website-link" v-if="staff?.restaurant?.website">
-              <a :href="staff.restaurant.website" target="_blank"
+            <li>{{ restaurant?.cuisineType }} Cuisine</li>
+            <li class="website-link" v-if="restaurant?.website">
+              <a :href="restaurant.website" target="_blank"
                 >Visit Our Website</a
               >
             </li>
-            <li
-              class="restaurant-description"
-              v-if="staff?.restaurant?.description"
-            >
-              {{ staff.restaurant.description }}
+            <li class="restaurant-description" v-if="restaurant?.description">
+              {{ restaurant.description }}
             </li>
           </ul>
         </div>
 
-        <div v-if="staff?.restaurant?.hoursOfOperation" class="footer-section">
+        <div v-if="restaurant?.hoursOfOperation" class="footer-section">
           <h3 class="footer-title">Hours</h3>
           <ul class="footer-list">
             <li>
-              {{ staff.restaurant.hoursOfOperation }}
+              {{ restaurant.hoursOfOperation }}
             </li>
           </ul>
         </div>
@@ -32,9 +29,9 @@
         <div class="footer-section">
           <h3 class="footer-title">Contact</h3>
           <ul class="footer-list">
-            <li>{{ staff?.restaurant?.address }}</li>
-            <li>{{ staff?.restaurant?.phoneNumber }}</li>
-            <li>{{ staff?.restaurant?.email }}</li>
+            <li>{{ restaurant?.address }}</li>
+            <li>{{ restaurant?.phoneNumber }}</li>
+            <li>{{ restaurant?.email }}</li>
           </ul>
         </div>
       </div>
@@ -49,27 +46,19 @@
 </template>
 
 <script>
-import { computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { computed } from "vue";
 import { useStore } from "vuex";
 
 export default {
   name: "WaitlistFooter",
   setup() {
     const store = useStore();
-    const router = useRouter();
-    const staff = computed(() => store.state.staff) || {};
+    const restaurant = computed(() => store.getters.restaurant);
 
     const currentYear = new Date().getFullYear();
 
-    onMounted(() => {
-      if (!staff.value) {
-        router.push("/");
-      }
-    });
-
     return {
-      staff,
+      restaurant,
       currentYear,
     };
   },
