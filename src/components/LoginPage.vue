@@ -1,14 +1,14 @@
 <template>
   <div>
-    <LoginForm @login-submitted="handleLogin" />
+    <LoginForm @login-submitted="handleLoginSubmit" />
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import axios from "axios";
 import LoginForm from "./LoginForm.vue";
+import { performLogin } from "@/utils/authUtils";
 
 export default {
   name: "LoginPage",
@@ -19,27 +19,16 @@ export default {
     const store = useStore();
     const router = useRouter();
 
-    const handleLogin = async (loginData) => {
+    const handleLoginSubmit = async (loginData) => {
       try {
-        console.log("Logging in...");
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_URL}/api/auth/login`,
-          loginData
-        );
-
-        console.log(response.data);
-        store.dispatch("setStaff", response.data);
-
-        alert("Login successful!");
-        router.push("/app");
+        await performLogin(loginData, store, router);
       } catch (error) {
-        console.error("Login error:", error);
-        alert("Login failed. Please check your credentials.");
+        throw new Error("Login failed. Please try again.");
       }
     };
 
     return {
-      handleLogin,
+      handleLoginSubmit,
     };
   },
 };

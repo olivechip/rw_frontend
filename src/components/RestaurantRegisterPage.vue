@@ -16,6 +16,7 @@ import { useStore } from "vuex";
 import axios from "axios";
 import RestaurantRegisterForm from "./RestaurantRegisterForm.vue";
 import StaffRegisterForm from "./StaffRegisterForm.vue";
+import { performLogin } from "@/utils/authUtils";
 
 export default {
   name: "RestaurantRegisterPage",
@@ -63,29 +64,10 @@ export default {
           password: staffData.password,
         };
 
-        await handleLogin(loginData);
+        await performLogin(loginData, store, router);
       } catch (error) {
         console.error("Staff creation error:", error);
         alert("Error creating staff account. Please try again.");
-      }
-    };
-
-    const handleLogin = async (loginData) => {
-      try {
-        console.log("Logging in...");
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_URL}/api/auth/login`,
-          loginData
-        );
-
-        console.log(response.data);
-        store.dispatch("setStaff", response.data);
-
-        alert("Login successful!");
-        router.push("/app");
-      } catch (error) {
-        console.error("Login error:", error);
-        alert("Login failed. Please check your credentials.");
       }
     };
 

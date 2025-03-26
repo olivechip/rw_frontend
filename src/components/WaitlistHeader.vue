@@ -51,8 +51,6 @@ export default {
     const store = useStore();
     const staff = computed(() => store.state.staff);
 
-    // console.log("User in WaitlistHeader:", staff.value);
-
     const isStaffOrAbove = computed(() => {
       return (
         staff.value && ["STAFF", "ADMIN", "MANAGER"].includes(staff.value.role)
