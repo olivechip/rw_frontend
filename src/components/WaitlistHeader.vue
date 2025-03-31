@@ -16,7 +16,7 @@
           <router-link to="/join" class="nav-link" v-if="isStaffOrAbove">
             Join Waitlist
           </router-link>
-          <router-link to="/edit" class="nav-link" v-if="isAdminOrManager">
+          <router-link to="/edit" class="nav-link" v-if="isManagerOrAbove">
             Edit Waitlist
           </router-link>
           <router-link
@@ -62,8 +62,12 @@ export default {
       );
     });
 
-    const isAdminOrManager = computed(() => {
+    const isManagerOrAbove = computed(() => {
       return staff.value && ["ADMIN", "MANAGER"].includes(staff.value.role);
+    });
+
+    const isAdmin = computed(() => {
+      return staff.value && ["ADMIN"].includes(staff.value.role);
     });
 
     const isMenuOpen = ref(false);
@@ -72,7 +76,8 @@ export default {
       staff,
       restaurant,
       isStaffOrAbove,
-      isAdminOrManager,
+      isManagerOrAbove,
+      isAdmin,
       isMenuOpen,
     };
   },

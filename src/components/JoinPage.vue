@@ -77,7 +77,7 @@ export default {
     const phoneNumber = ref("");
 
     const restaurantId = computed(() => {
-      return store.state.staff?.restaurant?.id;
+      return store.getters.restaurantId;
     });
 
     const validatePartySize = (event) => {
@@ -109,7 +109,7 @@ export default {
       }
       try {
         await axios.post(
-          `${process.env.VUE_APP_API_URL}/api/waitlist/create?restaurantId=${restaurantId.value}`,
+          `${process.env.VUE_APP_API_URL}/api/waitlist/join?restaurantId=${restaurantId.value}`,
           {
             name: name.value,
             partySize: partySize.value,
