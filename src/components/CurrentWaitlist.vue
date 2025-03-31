@@ -53,38 +53,35 @@
             <tr v-for="(party, index) in filteredWaitlist" :key="index">
               <td>
                 {{
-                  ["COMPLETED", "CANCELED"].includes(party.waitlistEntry.status)
+                  ["COMPLETED", "CANCELED"].includes(party.status)
                     ? "-"
                     : getVisiblePosition(index)
                 }}
               </td>
-              <td>{{ party.name }}</td>
-              <td>{{ party.partySize }}</td>
+              <td>{{ party.guest.name }}</td>
+              <td>{{ party.guest.partySize }}</td>
               <!-- <td v-if="view === 'staff'">{{ party.phoneNumber }}</td> -->
-              <td>{{ formatDateTime(party.waitlistEntry.joinTime) }}</td>
+              <td>{{ formatDateTime(party.joinTime) }}</td>
               <td>
                 <span
-                  v-if="
-                    ['WAITING', 'NOTIFIED'].includes(party.waitlistEntry.status)
-                  "
-                  :class="`status-badge ${party.waitlistEntry.status.toLowerCase()} ${
-                    view === 'staff' ? 'clickable' : null
+                  v-if="['WAITING', 'NOTIFIED'].includes(party.status)"
+                  :class="`status-badge ${party.status.toLowerCase()} ${
+                    view === 'staff' ? 'clickable' : ''
                   }`"
                   @click="view === 'staff' ? updateStatus(party) : null"
                 >
-                  {{ party.waitlistEntry.status }}
+                  {{ party.status }}
                 </span>
                 <span
                   v-else
-                  :class="`status-badge ${party.waitlistEntry.status.toLowerCase()} unclickable`"
+                  :class="`status-badge ${party.status.toLowerCase()} unclickable`"
                 >
-                  {{ party.waitlistEntry.status }}
+                  {{ party.status }}
                 </span>
                 <span
                   v-if="
                     view === 'staff' &&
-                    party.waitlistEntry.status !== 'COMPLETED' &&
-                    party.waitlistEntry.status !== 'CANCELED'
+                    !['COMPLETED', 'CANCELED'].includes(party.status)
                   "
                   @click="cancelEntry(party)"
                   aria-label="Cancel"
@@ -103,8 +100,8 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
-import RefreshButton from "./RefreshButton.vue";
 import { useStore } from "vuex";
+import RefreshButton from "./RefreshButton.vue";
 
 export default {
   name: "CurrentWaitlist",
@@ -112,50 +109,34 @@ export default {
   props: {
     view: { type: String, default: "guests" },
   },
-  setup(props, { emit }) {
+  setup(props) {
     const store = useStore();
     const waitlist = ref([]);
     const lastUpdated = ref(new Date().toLocaleTimeString());
     const sortBy = ref(null);
-    const restaurantId = computed(() => store.state.staff?.restaurant?.id);
+    const restaurantId = computed(() => store.getters.restaurantId);
 
     const filteredWaitlist = computed(() => {
-      const filtered = waitlist.value.filter(({ waitlistEntry }) =>
+      return waitlist.value.filter((party) =>
         props.view === "staff"
           ? true
-          : ["waiting", "notified"].includes(waitlistEntry.status.toLowerCase())
+          : ["WAITING", "NOTIFIED"].includes(party.status)
       );
+    });
 
-      return [...filtered].sort((a, b) => {
+    const sortedWaitlist = computed(() => {
+      return [...filteredWaitlist.value].sort((a, b) => {
         if (sortBy.value === "position") {
-          const positionA = ["CANCELED", "COMPLETED"].includes(
-            a.waitlistEntry.status
-          )
-            ? Infinity
-            : getVisiblePosition(filtered.indexOf(a));
-          const positionB = ["CANCELED", "COMPLETED"].includes(
-            b.waitlistEntry.status
-          )
-            ? Infinity
-            : getVisiblePosition(filtered.indexOf(b));
-          return positionA - positionB;
+          return (
+            getVisiblePosition(filteredWaitlist.value.indexOf(a)) -
+            getVisiblePosition(filteredWaitlist.value.indexOf(b))
+          );
         } else if (sortBy.value === "name") {
-          const nameA = a.name.toLowerCase();
-          const nameB = b.name.toLowerCase();
-          if (nameA < nameB) {
-            return -1;
-          } else if (nameA > nameB) {
-            return 1;
-          } else {
-            return 0;
-          }
+          return a.guest.name.localeCompare(b.guest.name);
         } else if (sortBy.value === "timeJoined") {
-          const timeA = new Date(a.waitlistEntry.joinTime);
-          const timeB = new Date(b.waitlistEntry.joinTime);
-          return timeA - timeB;
-        } else {
-          return 0;
+          return new Date(a.joinTime) - new Date(b.joinTime);
         }
+        return 0;
       });
     });
 
@@ -166,36 +147,24 @@ export default {
       }
       try {
         const { data } = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/waitlist?restaurantId=${restaurantId.value}`
+          `${process.env.VUE_APP_API_URL}/api/waitlist/restaurants/${restaurantId.value}`
         );
         waitlist.value = data;
         lastUpdated.value = new Date().toLocaleTimeString();
-
-        emit("waitlist-updated", waitlist.value);
       } catch (error) {
         console.error("Error fetching guests:", error);
       }
     };
 
-    const sortByPosition = () => {
-      sortBy.value = "position";
-    };
-
-    const sortByName = () => {
-      sortBy.value = "name";
-    };
-
-    const sortByTimeJoined = () => {
-      sortBy.value = "timeJoined";
-    };
+    const sortByPosition = () => (sortBy.value = "position");
+    const sortByName = () => (sortBy.value = "name");
+    const sortByTimeJoined = () => (sortBy.value = "timeJoined");
 
     const getVisiblePosition = (index) => {
       let position = 1;
       for (let i = 0; i < index; i++) {
         if (
-          !["COMPLETED", "CANCELED"].includes(
-            filteredWaitlist.value[i].waitlistEntry.status
-          )
+          !["COMPLETED", "CANCELED"].includes(filteredWaitlist.value[i].status)
         ) {
           position++;
         }
@@ -204,26 +173,20 @@ export default {
     };
 
     const formatDateTime = (utcTime) => {
-      const date = new Date(`${utcTime}Z`);
-      return `${date.toLocaleTimeString()}`;
+      return new Date(`${utcTime}Z`).toLocaleTimeString();
     };
 
     const updateStatus = async (party) => {
       const nextStatusMap = { WAITING: "NOTIFIED", NOTIFIED: "COMPLETED" };
-      const nextStatus = nextStatusMap[party.waitlistEntry.status];
-
+      const nextStatus = nextStatusMap[party.status];
       if (!nextStatus) return;
 
-      if (
-        confirm(
-          `Are you sure you want to mark ${party.name}'s status as ${nextStatus}?`
-        )
-      ) {
+      if (confirm(`Mark ${party.guest.name}'s status as ${nextStatus}?`)) {
         try {
           await axios.put(
             `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/${nextStatus}`
           );
-          party.waitlistEntry.status = nextStatus;
+          party.status = nextStatus;
           getWaitlist();
         } catch (error) {
           console.error("Error updating status:", error);
@@ -232,16 +195,12 @@ export default {
     };
 
     const cancelEntry = async (party) => {
-      if (
-        confirm(
-          `Are you sure you want to mark ${party.name}'s status as CANCELED?`
-        )
-      ) {
+      if (confirm(`Mark ${party.guest.name}'s status as CANCELED?`)) {
         try {
           await axios.put(
             `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/CANCELED`
           );
-          party.waitlistEntry.status = "CANCELED";
+          party.status = "CANCELED";
           getWaitlist();
         } catch (error) {
           console.error("Error canceling entry:", error);
@@ -257,6 +216,7 @@ export default {
       waitlist,
       lastUpdated,
       filteredWaitlist,
+      sortedWaitlist,
       getWaitlist,
       sortByPosition,
       sortByName,
