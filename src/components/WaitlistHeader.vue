@@ -9,17 +9,13 @@
 
       <nav class="desktop-nav">
         <!-- always visible -->
-        <router-link to="/view" class="nav-link">View Waitlist</router-link>
+        <router-link to="/restaurants" class="nav-link">Find Waitlists</router-link>
 
         <!-- waitlist management for logged in staff -->
         <template v-if="staff">
-          <router-link to="/join" class="nav-link" v-if="isStaffOrAbove">
-            Join Waitlist
-          </router-link>
-          <router-link to="/edit" class="nav-link" v-if="isManagerOrAbove">
-            Edit Waitlist
-          </router-link>
-          <router-link
+          <router-link to="/view" class="nav-link">View Waitlist</router-link>
+          <router-link to="/join" class="nav-link" v-if="isStaffOrAbove">Join Waitlist</router-link>
+          <router-link to="/edit" class="nav-link" v-if="isManagerOrAbove">Edit Waitlist</router-link><router-link
             to=""
             class="nav-link"
             @click.prevent="$emit('logout-submitted')"

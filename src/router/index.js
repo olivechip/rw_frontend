@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../components/HomePage.vue";
+import RestaurantsPage from "../components/RestaurantsPage.vue";
 import RestaurantRegisterPage from "@/components/RestaurantRegisterPage.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import AppDashboard from "../components/AppDashboard.vue";
@@ -9,6 +10,7 @@ import EditPage from "../components/EditPage.vue";
 
 const routes = [
   { path: "/", name: "HomePage", component: HomePage },
+  { path: "/restaurants", name: "RestaurantsPage", component: RestaurantsPage },
   { path: "/register", name: "RestaurantRegisterPage", component: RestaurantRegisterPage },
   { path: "/login", name: "LoginPage", component: LoginPage },
   { path: "/app", name: "AppDashboard", component: AppDashboard },
