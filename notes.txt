@@ -1,9 +1,6 @@
-resRegisterForm has pre-filled values
-need to fix getResById and other unchanged methods to return DTOs
-CurrentWaitlist is not grabbing the restaurantId from store?
+fix logout on refresh issue
+implement restaurants page logic
+fix public waitlist view for guests/url
 
 future plans
 - delete restaurant if creation fails
-
-just finished wle w/ guest controller
-- need to move on to service/repo
