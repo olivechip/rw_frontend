@@ -183,8 +183,9 @@ export default {
 
       if (confirm(`Mark ${party.guest.name}'s status as ${nextStatus}?`)) {
         try {
-          await axios.put(
-            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/${nextStatus}`
+          await axios.patch(
+            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}`,
+            { status: nextStatus }
           );
           party.status = nextStatus;
           getWaitlist();
@@ -195,12 +196,15 @@ export default {
     };
 
     const cancelEntry = async (party) => {
-      if (confirm(`Mark ${party.guest.name}'s status as CANCELED?`)) {
+      if (
+        confirm(
+          `Mark ${party.guest.name}'s status as CANCELED and remove from waitlist?`
+        )
+      ) {
         try {
-          await axios.put(
-            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}/CANCELED`
+          await axios.delete(
+            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}`
           );
-          party.status = "CANCELED";
           getWaitlist();
         } catch (error) {
           console.error("Error canceling entry:", error);
