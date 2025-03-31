@@ -3,11 +3,7 @@
     <div class="container">
       <h3 class="parties-title">
         <span class="title-text">
-          {{
-            view === "staff"
-              ? `Total Parties (${filteredWaitlist.length})`
-              : "Current Waitlist"
-          }}
+          {{ view === "staff" ? "Complete Waitlist" : "Current Waitlist" }}
         </span>
         <RefreshButton @refresh="getWaitlist" />
         <p class="tiny-text">last updated: {{ lastUpdated }}</p>
@@ -50,12 +46,12 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(party, index) in filteredWaitlist" :key="index">
+            <tr v-for="party in sortedWaitlist" :key="party.id">
               <td>
                 {{
                   ["COMPLETED", "CANCELED"].includes(party.status)
                     ? "-"
-                    : getVisiblePosition(index)
+                    : getWaitlistPosition(party)
                 }}
               </td>
               <td>{{ party.guest.name }}</td>
@@ -127,10 +123,15 @@ export default {
     const sortedWaitlist = computed(() => {
       return [...filteredWaitlist.value].sort((a, b) => {
         if (sortBy.value === "position") {
-          return (
-            getVisiblePosition(filteredWaitlist.value.indexOf(a)) -
-            getVisiblePosition(filteredWaitlist.value.indexOf(b))
-          );
+          const posA = ["COMPLETED", "CANCELED"].includes(a.status)
+            ? Infinity
+            : filteredWaitlist.value.indexOf(a) + 1;
+          const posB = ["COMPLETED", "CANCELED"].includes(b.status)
+            ? Infinity
+            : filteredWaitlist.value.indexOf(b) + 1;
+
+          if (posA !== posB) return posA - posB;
+          return new Date(a.joinTime) - new Date(b.joinTime);
         } else if (sortBy.value === "name") {
           return a.guest.name.localeCompare(b.guest.name);
         } else if (sortBy.value === "timeJoined") {
@@ -160,15 +161,11 @@ export default {
     const sortByName = () => (sortBy.value = "name");
     const sortByTimeJoined = () => (sortBy.value = "timeJoined");
 
-    const getVisiblePosition = (index) => {
-      let position = 1;
-      for (let i = 0; i < index; i++) {
-        if (
-          !["COMPLETED", "CANCELED"].includes(filteredWaitlist.value[i].status)
-        ) {
-          position++;
-        }
-      }
+    const getWaitlistPosition = (party) => {
+      const filtered = filteredWaitlist.value.filter(
+        (p) => !["COMPLETED", "CANCELED"].includes(p.status)
+      );
+      const position = filtered.findIndex((p) => p.id === party.id) + 1;
       return position;
     };
 
@@ -196,14 +193,11 @@ export default {
     };
 
     const cancelEntry = async (party) => {
-      if (
-        confirm(
-          `Mark ${party.guest.name}'s status as CANCELED and remove from waitlist?`
-        )
-      ) {
+      if (confirm(`Mark ${party.guest.name}'s status as CANCELED?`)) {
         try {
-          await axios.delete(
-            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}`
+          await axios.patch(
+            `${process.env.VUE_APP_API_URL}/api/waitlist/${party.id}`,
+            { status: "CANCELED" }
           );
           getWaitlist();
         } catch (error) {
@@ -225,7 +219,7 @@ export default {
       sortByPosition,
       sortByName,
       sortByTimeJoined,
-      getVisiblePosition,
+      getWaitlistPosition,
       formatDateTime,
       updateStatus,
       cancelEntry,
